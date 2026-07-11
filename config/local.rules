@@ -1,61 +1,215 @@
-# local.rules — custom rules mapped to MITRE ATT&CK techniques.
-# SIDs 1000000-1999999 are reserved for local use.
-# Every rule carries metadata (mitre_tactic_id / mitre_technique_id) that
-# lands in eve.json -> Splunk under alert.metadata.*, same format the
-# ET Open ruleset uses.
+# local.rules — custom detection rules for HOME_NET 192.168.30.0/27
+# ---------------------------------------------------------------------------
+# All rules carry MITRE ATT&CK metadata (same format as ET Open) so alerts
+# arrive in Splunk with alert.metadata.mitre_technique_id populated.
 #
-# Network: HOME_NET = 192.168.30.0/27
+# SID blocks:
+#   1000100+  Scanning & reconnaissance
+#   1000200+  Brute force / password attacks
+#   1000300+  Lateral movement
+#   1000400+  Command & control / tunneling
+#   1000500+  Exfiltration
+#   1000600+  Cleartext credentials & policy violations
+#   1000700+  Malware delivery / tool transfer
+#   1000800+  Attack tools & web attacks
+#   1000900+  Misc (crypto mining, Tor, DoH bypass, exposed services)
+#
 # Reload after editing:  sudo suricatasc -c reload-rules
+# Tune thresholds to your traffic before trusting counts in production.
 
-# ---------------------------------------------------------------------------
-# T1046 — Network Service Discovery (internal port scanning, e.g. nmap)
-# ---------------------------------------------------------------------------
-alert tcp any any -> $HOME_NET any (msg:"LOCAL SCAN Possible TCP port scan (SYN flood to many ports)"; flags:S; flow:stateless; threshold:type both, track by_src, count 100, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_tactic_name Discovery, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000010; rev:1;)
+# ===========================================================================
+# 1001xx — SCANNING & RECONNAISSANCE
+# ===========================================================================
 
-# T1018 / T1046 — ICMP sweep across the subnet
-alert icmp any any -> $HOME_NET any (msg:"LOCAL SCAN Possible ICMP ping sweep"; itype:8; threshold:type both, track by_src, count 20, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1018, mitre_technique_name Remote_System_Discovery; sid:1000011; rev:1;)
+# TCP SYN scan — one source hammering many ports/hosts (nmap -sS, masscan)
+alert tcp any any -> $HOME_NET any (msg:"LOCAL SCAN TCP SYN scan detected (100+ SYNs in 10s)"; flags:S; flow:stateless; threshold:type both, track by_src, count 100, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000100; rev:2;)
 
-# ---------------------------------------------------------------------------
-# T1110 — Brute Force against exposed services
-# ---------------------------------------------------------------------------
-alert tcp any any -> $HOME_NET 22 (msg:"LOCAL BRUTE Possible SSH brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_tactic_name Credential_Access, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000020; rev:1;)
+# FIN scan (nmap -sF) — FIN with no established flow is never legitimate
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"LOCAL SCAN TCP FIN scan (stealth scan)"; flags:F; flow:stateless; threshold:type both, track by_src, count 20, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000101; rev:1;)
 
-alert tcp any any -> $HOME_NET 3389 (msg:"LOCAL BRUTE Possible RDP brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000021; rev:1;)
+# NULL scan (nmap -sN) — no flags set at all
+alert tcp any any -> $HOME_NET any (msg:"LOCAL SCAN TCP NULL scan (no flags)"; flags:0; flow:stateless; threshold:type both, track by_src, count 10, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000102; rev:1;)
 
-alert tcp any any -> $HOME_NET 445 (msg:"LOCAL BRUTE Possible SMB brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 20, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000022; rev:1;)
+# Xmas scan (nmap -sX) — FIN+PSH+URG lit up like a tree
+alert tcp any any -> $HOME_NET any (msg:"LOCAL SCAN TCP Xmas scan (FIN+PSH+URG)"; flags:FPU; flow:stateless; threshold:type both, track by_src, count 10, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000103; rev:1;)
 
-# ---------------------------------------------------------------------------
-# T1021 — Remote Services (lateral movement inside the /27)
-# ---------------------------------------------------------------------------
-alert tcp $HOME_NET any -> $HOME_NET 3389 (msg:"LOCAL LATERAL Internal host initiating RDP to another internal host"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 300; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_tactic_name Lateral_Movement, mitre_technique_id T1021.001, mitre_technique_name Remote_Desktop_Protocol; sid:1000030; rev:1;)
+# UDP scan — a scanned host emits bursts of ICMP port-unreachable (track scanner = by_dst)
+alert icmp $HOME_NET any -> any any (msg:"LOCAL SCAN Possible UDP port scan (ICMP port-unreachable burst)"; itype:3; icode:3; threshold:type both, track by_dst, count 30, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000104; rev:1;)
 
-alert tcp $HOME_NET any -> $HOME_NET [5985,5986] (msg:"LOCAL LATERAL WinRM between internal hosts"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 300; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.006, mitre_technique_name Windows_Remote_Management; sid:1000031; rev:1;)
+# ICMP ping sweep across the subnet (nmap -sn)
+alert icmp any any -> $HOME_NET any (msg:"LOCAL SCAN ICMP ping sweep"; itype:8; threshold:type both, track by_src, count 15, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1018, mitre_technique_name Remote_System_Discovery; sid:1000105; rev:1;)
 
-# ---------------------------------------------------------------------------
-# T1071.004 / T1572 — DNS-based C2 and tunneling
-# ---------------------------------------------------------------------------
-alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Suspicious long DNS query (possible tunneling)"; dns.query; bsize:>75; threshold:type both, track by_src, count 20, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_tactic_name Command_And_Control, mitre_technique_id T1071.004, mitre_technique_name DNS; sid:1000040; rev:1;)
+# Internal host scanning the internet — strong sign the host is compromised
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL SCAN Internal host mass-scanning external hosts (possible infection)"; flags:S; flow:stateless; threshold:type both, track by_src, count 300, seconds 10; classtype:trojan-activity; metadata:mitre_tactic_id TA0007, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000106; rev:1;)
 
-alert dns $HOME_NET any -> any any (msg:"LOCAL C2 High-volume DNS TXT queries (possible tunneling)"; dns.query; dns.opcode:0; threshold:type both, track by_src, count 50, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1572, mitre_technique_name Protocol_Tunneling; sid:1000041; rev:1;)
+# Nmap script engine identifying itself over HTTP
+alert http any any -> $HOME_NET any (msg:"LOCAL SCAN Nmap Scripting Engine HTTP probe"; http.user_agent; content:"Nmap Scripting Engine"; nocase; classtype:attempted-recon; metadata:mitre_tactic_id TA0043, mitre_technique_id T1595, mitre_technique_name Active_Scanning; sid:1000107; rev:1;)
 
-# T1090/T1571 — internal host talking to the internet on odd C2-ish ports
-alert tcp $HOME_NET any -> $EXTERNAL_NET [4444,5555,6666,6667,1337,31337] (msg:"LOCAL C2 Outbound connection to classic C2/IRC port"; flags:S; flow:stateless; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1571, mitre_technique_name Non-Standard_Port; sid:1000042; rev:1;)
+# masscan identifying itself
+alert http any any -> $HOME_NET any (msg:"LOCAL SCAN masscan HTTP probe"; http.user_agent; content:"masscan"; nocase; classtype:attempted-recon; metadata:mitre_tactic_id TA0043, mitre_technique_id T1595, mitre_technique_name Active_Scanning; sid:1000108; rev:1;)
 
-# ---------------------------------------------------------------------------
-# T1048 — Exfiltration over alternative protocols
-# ---------------------------------------------------------------------------
-alert tcp $HOME_NET any -> $EXTERNAL_NET 21 (msg:"LOCAL EXFIL Outbound FTP from internal network"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_tactic_name Exfiltration, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000050; rev:1;)
+# ===========================================================================
+# 1002xx — BRUTE FORCE / PASSWORD ATTACKS
+# ===========================================================================
 
-alert tcp $HOME_NET any -> $EXTERNAL_NET 445 (msg:"LOCAL EXFIL Outbound SMB to internet (exfil/lateral indicator)"; flags:S; flow:stateless; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000051; rev:1;)
+alert tcp any any -> $HOME_NET 22 (msg:"LOCAL BRUTE SSH brute force (15+ connections/min)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000200; rev:2;)
 
-# ---------------------------------------------------------------------------
-# T1040 — cleartext protocols worth flagging on a modern network
-# ---------------------------------------------------------------------------
-alert tcp $HOME_NET any -> any 23 (msg:"LOCAL POLICY Telnet client in use (cleartext credentials)"; flow:to_server,established; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000060; rev:1;)
+alert tcp any any -> $HOME_NET 3389 (msg:"LOCAL BRUTE RDP brute force (15+ connections/min)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000201; rev:2;)
 
-alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL POLICY HTTP Basic auth over cleartext to internet"; http.header; content:"Authorization|3a 20|Basic"; nocase; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000061; rev:1;)
+alert tcp any any -> $HOME_NET 445 (msg:"LOCAL BRUTE SMB brute force (20+ connections/min)"; flags:S; flow:stateless; threshold:type both, track by_src, count 20, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000202; rev:2;)
 
-# ---------------------------------------------------------------------------
-# T1105 — Ingress Tool Transfer (executables downloaded over plain HTTP)
-# ---------------------------------------------------------------------------
-alert http any any -> $HOME_NET any (msg:"LOCAL DOWNLOAD Windows executable over plain HTTP (MZ header)"; flow:to_client,established; file.data; content:"MZ"; startswith; classtype:policy-violation; metadata:mitre_tactic_id TA0011, mitre_technique_id T1105, mitre_technique_name Ingress_Tool_Transfer; sid:1000070; rev:1;)
+# FTP: server replying "530 Login incorrect" repeatedly to the same client
+alert tcp $HOME_NET 21 -> any any (msg:"LOCAL BRUTE FTP brute force (repeated 530 login failures)"; flow:from_server,established; content:"530 "; startswith; threshold:type both, track by_dst, count 5, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110.001, mitre_technique_name Password_Guessing; sid:1000203; rev:1;)
+
+# VNC brute force
+alert tcp any any -> $HOME_NET 5900:5910 (msg:"LOCAL BRUTE VNC brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000204; rev:1;)
+
+# Database services brute force (MySQL/MSSQL/Postgres)
+alert tcp any any -> $HOME_NET [1433,3306,5432] (msg:"LOCAL BRUTE Database brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000205; rev:1;)
+
+# Kerberos password spraying — burst of PREAUTH_FAILED (err 24) from the KDC
+alert krb5 $HOME_NET 88 -> any any (msg:"LOCAL BRUTE Kerberos pre-auth failures burst (password spraying)"; krb5_err_code:24; threshold:type both, track by_dst, count 10, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110.003, mitre_technique_name Password_Spraying; sid:1000206; rev:1;)
+
+# HTTP auth brute force — burst of 401s to the same client
+alert http $HOME_NET any -> any any (msg:"LOCAL BRUTE HTTP auth brute force (repeated 401 responses)"; http.stat_code; content:"401"; threshold:type both, track by_dst, count 10, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000207; rev:1;)
+
+# ===========================================================================
+# 1003xx — LATERAL MOVEMENT (internal -> internal)
+# ===========================================================================
+
+alert tcp $HOME_NET any -> $HOME_NET 3389 (msg:"LOCAL LATERAL RDP between internal hosts"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 300; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.001, mitre_technique_name Remote_Desktop_Protocol; sid:1000300; rev:2;)
+
+alert tcp $HOME_NET any -> $HOME_NET [5985,5986] (msg:"LOCAL LATERAL WinRM between internal hosts"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 300; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.006, mitre_technique_name Windows_Remote_Management; sid:1000301; rev:2;)
+
+# PsExec-style service creation: SVCCTL named pipe over SMB
+alert smb $HOME_NET any -> $HOME_NET 445 (msg:"LOCAL LATERAL PsExec-style svcctl pipe access (remote service creation)"; smb.named_pipe; content:"svcctl"; nocase; classtype:attempted-admin; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.002, mitre_technique_name SMB_Windows_Admin_Shares; sid:1000302; rev:1;)
+
+# Admin share access (ADMIN$ / C$) between workstations
+alert smb $HOME_NET any -> $HOME_NET 445 (msg:"LOCAL LATERAL ADMIN$ share access between internal hosts"; smb.share; content:"ADMIN$"; nocase; classtype:attempted-admin; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.002, mitre_technique_name SMB_Windows_Admin_Shares; sid:1000303; rev:1;)
+
+alert smb $HOME_NET any -> $HOME_NET 445 (msg:"LOCAL LATERAL C$ share access between internal hosts"; smb.share; content:"C$"; nocase; endswith; classtype:attempted-admin; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.002, mitre_technique_name SMB_Windows_Admin_Shares; sid:1000304; rev:1;)
+
+# WMI remote execution setup (DCOM endpoint mapper burst then 445/135)
+alert tcp $HOME_NET any -> $HOME_NET 135 (msg:"LOCAL LATERAL DCOM/WMI connection between internal hosts"; flags:S; flow:stateless; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.003, mitre_technique_name Distributed_Component_Object_Model; sid:1000305; rev:1;)
+
+# SSH between internal hosts (tune: whitelist your admin box with a pass rule)
+alert tcp $HOME_NET any -> $HOME_NET 22 (msg:"LOCAL LATERAL SSH between internal hosts"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.004, mitre_technique_name SSH; sid:1000306; rev:1;)
+
+# ===========================================================================
+# 1004xx — COMMAND & CONTROL / TUNNELING
+# ===========================================================================
+
+# DNS tunneling: abnormally long query names
+alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Long DNS query burst (possible DNS tunneling)"; dns.query; bsize:>75; threshold:type both, track by_src, count 20, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1071.004, mitre_technique_name DNS; sid:1000400; rev:2;)
+
+# DNS tunneling: sheer query volume from one host
+alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Excessive DNS query rate from single host"; dns.query; dns.opcode:0; threshold:type both, track by_src, count 200, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1572, mitre_technique_name Protocol_Tunneling; sid:1000401; rev:2;)
+
+# ICMP tunneling: echo packets with large payloads (ptunnel, icmpsh)
+alert icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL C2 Oversized ICMP echo (possible ICMP tunnel)"; itype:8; dsize:>800; threshold:type both, track by_src, count 5, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1095, mitre_technique_name Non-Application_Layer_Protocol; sid:1000402; rev:1;)
+
+# Classic C2 / reverse-shell ports outbound
+alert tcp $HOME_NET any -> $EXTERNAL_NET [1337,4444,5555,6666,6667,8081,9001,31337] (msg:"LOCAL C2 Outbound connection to classic C2/reverse-shell port"; flags:S; flow:stateless; classtype:trojan-activity; metadata:mitre_tactic_id TA0011, mitre_technique_id T1571, mitre_technique_name Non-Standard_Port; sid:1000403; rev:2;)
+
+# SSH running on a non-standard port outbound (tunnel/pivot indicator)
+alert ssh $HOME_NET any -> $EXTERNAL_NET !22 (msg:"LOCAL C2 Outbound SSH on non-standard port"; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1571, mitre_technique_name Non-Standard_Port; sid:1000404; rev:1;)
+
+# TLS on unusual ports — malware C2 often wraps TLS on random high ports
+alert tls $HOME_NET any -> $EXTERNAL_NET ![443,853,465,563,587,636,993,995,8443] (msg:"LOCAL C2 TLS on non-standard port (possible C2 channel)"; threshold:type both, track by_src, count 3, seconds 300; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1573, mitre_technique_name Encrypted_Channel; sid:1000405; rev:2;)
+
+# IRC protocol leaving the network (botnet C2)
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL C2 IRC NICK/JOIN outbound (botnet indicator)"; flow:to_server,established; content:"NICK "; startswith; classtype:trojan-activity; metadata:mitre_tactic_id TA0011, mitre_technique_id T1071, mitre_technique_name Application_Layer_Protocol; sid:1000406; rev:1;)
+
+# ===========================================================================
+# 1005xx — EXFILTRATION
+# ===========================================================================
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 21 (msg:"LOCAL EXFIL Outbound FTP session to internet"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000500; rev:2;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 445 (msg:"LOCAL EXFIL Outbound SMB to internet"; flags:S; flow:stateless; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000501; rev:2;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET [69,514,2049] (msg:"LOCAL EXFIL Outbound TFTP/syslog/NFS to internet"; flags:S; flow:stateless; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000502; rev:1;)
+
+# DNS exfil: very long TXT answers coming back could also be C2 tasking
+alert dns any 53 -> $HOME_NET any (msg:"LOCAL EXFIL Oversized DNS response burst (possible DNS exfil channel)"; dsize:>512; threshold:type both, track by_dst, count 30, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0010, mitre_technique_id T1048.003, mitre_technique_name Exfiltration_Over_Unencrypted_Protocol; sid:1000503; rev:1;)
+
+# ===========================================================================
+# 1006xx — CLEARTEXT CREDENTIALS & POLICY
+# ===========================================================================
+
+alert tcp $HOME_NET any -> any 23 (msg:"LOCAL POLICY Telnet in use (cleartext credentials)"; flow:to_server,established; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000600; rev:2;)
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL POLICY HTTP Basic auth sent to internet in cleartext"; http.header; content:"Authorization|3a 20|Basic"; nocase; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000601; rev:2;)
+
+# FTP credentials crossing the wire outbound
+alert tcp $HOME_NET any -> $EXTERNAL_NET 21 (msg:"LOCAL POLICY FTP cleartext password sent to internet"; flow:to_server,established; content:"PASS "; startswith; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000602; rev:1;)
+
+# SNMP with default community strings — free admin access for attackers
+alert snmp $EXTERNAL_NET any -> $HOME_NET 161 (msg:"LOCAL POLICY SNMP default community 'public' from external"; snmp.community; content:"public"; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1016, mitre_technique_name System_Network_Configuration_Discovery; sid:1000603; rev:1;)
+
+alert snmp any any -> $HOME_NET 161 (msg:"LOCAL POLICY SNMP default community 'private' (write access)"; snmp.community; content:"private"; classtype:attempted-admin; metadata:mitre_tactic_id TA0007, mitre_technique_id T1016, mitre_technique_name System_Network_Configuration_Discovery; sid:1000604; rev:1;)
+
+# Outbound RDP to the internet — rarely legitimate, often RAT/ransomware ops
+alert tcp $HOME_NET any -> $EXTERNAL_NET 3389 (msg:"LOCAL POLICY Outbound RDP to internet"; flags:S; flow:stateless; classtype:policy-violation; metadata:mitre_tactic_id TA0011, mitre_technique_id T1219, mitre_technique_name Remote_Access_Software; sid:1000605; rev:1;)
+
+# ===========================================================================
+# 1007xx — MALWARE DELIVERY / TOOL TRANSFER
+# ===========================================================================
+
+# Windows executable delivered over plain HTTP (MZ header in body)
+alert http any any -> $HOME_NET any (msg:"LOCAL DOWNLOAD Windows PE over cleartext HTTP"; flow:to_client,established; file.data; content:"MZ"; startswith; classtype:policy-violation; metadata:mitre_tactic_id TA0011, mitre_technique_id T1105, mitre_technique_name Ingress_Tool_Transfer; sid:1000700; rev:2;)
+
+# Double-extension lure (invoice.pdf.exe)
+alert http $HOME_NET any -> any any (msg:"LOCAL DOWNLOAD Double-extension executable requested (.doc/.pdf/.jpg.exe)"; http.uri; pcre:"/\.(pdf|doc|docx|xls|xlsx|jpg|png|txt)\.exe/i"; classtype:trojan-activity; metadata:mitre_tactic_id TA0001, mitre_technique_id T1566.002, mitre_technique_name Spearphishing_Link; sid:1000701; rev:1;)
+
+# PowerShell/scripting tools fetching files (living-off-the-land download)
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL DOWNLOAD PowerShell user-agent fetching from internet"; http.user_agent; content:"WindowsPowerShell"; nocase; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1105, mitre_technique_name Ingress_Tool_Transfer; sid:1000702; rev:1;)
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL DOWNLOAD certutil user-agent fetching from internet (LOLBin)"; http.user_agent; content:"CertUtil"; nocase; classtype:bad-unknown; metadata:mitre_tactic_id TA0005, mitre_technique_id T1105, mitre_technique_name Ingress_Tool_Transfer; sid:1000703; rev:1;)
+
+# HTA / script payloads over HTTP
+alert http any any -> $HOME_NET any (msg:"LOCAL DOWNLOAD HTA application over HTTP (mshta vector)"; http.content_type; content:"application/hta"; nocase; classtype:trojan-activity; metadata:mitre_tactic_id TA0002, mitre_technique_id T1218.005, mitre_technique_name Mshta; sid:1000704; rev:1;)
+
+# ===========================================================================
+# 1008xx — ATTACK TOOLS & WEB ATTACKS
+# ===========================================================================
+
+alert http any any -> $HOME_NET any (msg:"LOCAL TOOL sqlmap scan detected"; http.user_agent; content:"sqlmap"; nocase; classtype:web-application-attack; metadata:mitre_tactic_id TA0001, mitre_technique_id T1190, mitre_technique_name Exploit_Public-Facing_Application; sid:1000800; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"LOCAL TOOL Nikto scan detected"; http.user_agent; content:"Nikto"; nocase; classtype:web-application-attack; metadata:mitre_tactic_id TA0043, mitre_technique_id T1595.002, mitre_technique_name Vulnerability_Scanning; sid:1000801; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"LOCAL TOOL gobuster/dirbuster directory brute force"; http.user_agent; pcre:"/(gobuster|dirbuster|dirsearch|feroxbuster|ffuf)/i"; classtype:web-application-attack; metadata:mitre_tactic_id TA0043, mitre_technique_id T1595.003, mitre_technique_name Wordlist_Scanning; sid:1000802; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"LOCAL TOOL Hydra HTTP brute force tool"; http.user_agent; content:"Hydra"; nocase; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000803; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"LOCAL TOOL WPScan WordPress scanner"; http.user_agent; content:"WPScan"; nocase; classtype:web-application-attack; metadata:mitre_tactic_id TA0043, mitre_technique_id T1595.002, mitre_technique_name Vulnerability_Scanning; sid:1000804; rev:1;)
+
+# Basic SQL injection attempts in URI (ET Open covers this deeply; safety net)
+alert http any any -> $HOME_NET any (msg:"LOCAL WEB SQL injection attempt (UNION SELECT in URI)"; http.uri; content:"UNION"; nocase; content:"SELECT"; nocase; distance:0; within:20; classtype:web-application-attack; metadata:mitre_tactic_id TA0001, mitre_technique_id T1190, mitre_technique_name Exploit_Public-Facing_Application; sid:1000805; rev:1;)
+
+# Path traversal attempts
+alert http any any -> $HOME_NET any (msg:"LOCAL WEB Path traversal attempt (../ sequences)"; http.uri; content:"../../"; classtype:web-application-attack; metadata:mitre_tactic_id TA0001, mitre_technique_id T1190, mitre_technique_name Exploit_Public-Facing_Application; sid:1000806; rev:1;)
+
+# Webshell-ish requests: cmd= parameter with system commands
+alert http any any -> $HOME_NET any (msg:"LOCAL WEB Possible webshell command execution (cmd= whoami/ipconfig)"; http.uri; pcre:"/[?&](cmd|exec|command)=(whoami|ipconfig|ifconfig|net%20user|id|uname)/i"; classtype:web-application-attack; metadata:mitre_tactic_id TA0003, mitre_technique_id T1505.003, mitre_technique_name Web_Shell; sid:1000807; rev:1;)
+
+# ===========================================================================
+# 1009xx — MISC: MINING, TOR, DNS BYPASS, EXPOSED SERVICES
+# ===========================================================================
+
+# Crypto mining: Stratum protocol
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL MINING Stratum mining protocol (mining.subscribe)"; flow:to_server,established; content:"mining.subscribe"; classtype:policy-violation; metadata:mitre_tactic_id TA0040, mitre_technique_id T1496, mitre_technique_name Resource_Hijacking; sid:1000900; rev:1;)
+
+# Tor: DNS lookup for .onion (leaks when apps resolve onion via normal DNS)
+alert dns $HOME_NET any -> any any (msg:"LOCAL TOR DNS query for .onion address"; dns.query; content:".onion"; nocase; endswith; classtype:policy-violation; metadata:mitre_tactic_id TA0011, mitre_technique_id T1090.003, mitre_technique_name Multi-hop_Proxy; sid:1000901; rev:1;)
+
+# DNS-over-HTTPS to public resolvers — bypasses your DNS monitoring
+alert tls $HOME_NET any -> $EXTERNAL_NET 443 (msg:"LOCAL POLICY DNS-over-HTTPS resolver contacted (DNS monitoring bypass)"; tls.sni; pcre:"/^(dns\.google|cloudflare-dns\.com|mozilla\.cloudflare-dns\.com|dns\.quad9\.net|doh\.opendns\.com|dns\.adguard\.com)$/i"; threshold:type limit, track by_src, count 1, seconds 3600; classtype:policy-violation; metadata:mitre_tactic_id TA0011, mitre_technique_id T1572, mitre_technique_name Protocol_Tunneling; sid:1000902; rev:1;)
+
+# External hosts reaching database/admin services that must never be exposed
+alert tcp $EXTERNAL_NET any -> $HOME_NET [1433,3306,5432,6379,9200,27017] (msg:"LOCAL EXPOSURE External connection attempt to internal database service"; flags:S; flow:stateless; classtype:attempted-recon; metadata:mitre_tactic_id TA0001, mitre_technique_id T1190, mitre_technique_name Exploit_Public-Facing_Application; sid:1000903; rev:1;)
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET [5900:5910,5985,5986] (msg:"LOCAL EXPOSURE External connection attempt to VNC/WinRM"; flags:S; flow:stateless; classtype:attempted-recon; metadata:mitre_tactic_id TA0001, mitre_technique_id T1133, mitre_technique_name External_Remote_Services; sid:1000904; rev:1;)
+
+# Rogue DHCP server detection — uncomment and set your real DHCP server IP:
+# alert udp ![192.168.30.1] 67 -> any 68 (msg:"LOCAL ROGUE Unauthorized DHCP server offering leases"; classtype:bad-unknown; metadata:mitre_tactic_id TA0006, mitre_technique_id T1557, mitre_technique_name Adversary-in-the-Middle; sid:1000905; rev:1;)
