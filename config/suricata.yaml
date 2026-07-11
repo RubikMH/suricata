@@ -120,7 +120,7 @@ outputs:
             enabled: yes
             extended: no
         - krb5
-        - ikev2
+        - ike
         - snmp
         - flow                       # bidirectional flow records (NetFlow-like)
         - stats:
@@ -167,7 +167,7 @@ app-layer:
       detection-ports:
         dp: 443
       # Keep inspecting after handshake for JA3/JA4 + cert logging
-      encryption-handling: default
+      encryption-handling: track-only
     dcerpc:
       enabled: yes
     ftp:
