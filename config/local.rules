@@ -1,0 +1,20 @@
+# local.rules — your custom detection rules.
+# SIDs 1000000-1999999 are reserved for local use.
+# After editing, reload without restart:  sudo suricatasc -c reload-rules
+
+# --- Examples (all commented out; uncomment/adapt what you need) ---
+
+# Alert on any ICMP from outside to inside (noisy — demo only)
+# alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"LOCAL ICMP from external"; sid:1000001; rev:1;)
+
+# Cleartext telnet use inside the network
+# alert tcp $HOME_NET any -> any 23 (msg:"LOCAL Telnet client in use"; flow:to_server,established; sid:1000002; rev:1;)
+
+# Outbound connection to a known-bad IP (replace with your IOC)
+# alert ip $HOME_NET any -> 203.0.113.66 any (msg:"LOCAL Traffic to blocklisted IP"; sid:1000003; rev:1;)
+
+# DNS query for a suspicious domain
+# alert dns $HOME_NET any -> any any (msg:"LOCAL DNS query for bad domain"; dns.query; content:"evil.example.com"; nocase; sid:1000004; rev:1;)
+
+# SMB from a workstation VLAN to the internet (lateral/exfil indicator)
+# alert tcp $HOME_NET any -> $EXTERNAL_NET 445 (msg:"LOCAL Outbound SMB to internet"; flow:to_server; sid:1000005; rev:1;)

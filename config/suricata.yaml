@@ -1,0 +1,337 @@
+%YAML 1.1
+---
+# Suricata IDS configuration — tuned for passive network monitoring with
+# EVE JSON output for Splunk ingestion.
+#
+# REQUIRED EDITS before deploying:
+#   1. vars.address-groups.HOME_NET  -> your internal network(s)
+#   2. af-packet[0].interface        -> your capture NIC
+#
+# Validate after any change:  sudo suricata -T -c /etc/suricata/suricata.yaml -v
+
+vars:
+  address-groups:
+    # >>> CHANGE ME: list every internal range you own <<<
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+    HTTP_SERVERS: "$HOME_NET"
+    SMTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    DNS_SERVERS: "$HOME_NET"
+    TELNET_SERVERS: "$HOME_NET"
+    AIM_SERVERS: "$EXTERNAL_NET"
+    DC_SERVERS: "$HOME_NET"
+    DNP3_SERVER: "$HOME_NET"
+    DNP3_CLIENT: "$HOME_NET"
+    MODBUS_CLIENT: "$HOME_NET"
+    MODBUS_SERVER: "$HOME_NET"
+    ENIP_CLIENT: "$HOME_NET"
+    ENIP_SERVER: "$HOME_NET"
+
+  port-groups:
+    HTTP_PORTS: "80"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+    FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
+    FTP_PORTS: 21
+    GENEVE_PORTS: 6081
+    VXLAN_PORTS: 4789
+    TEREDO_PORTS: 3544
+
+##
+## Capture: AF_PACKET (Linux, passive IDS)
+##
+af-packet:
+  - interface: eth0            # >>> CHANGE ME: your mirror/SPAN interface <<<
+    cluster-id: 99
+    cluster-type: cluster_flow # keep flows on the same thread
+    defrag: yes
+    use-mmap: yes
+    tpacket-v3: yes            # best performance for pure IDS
+    ring-size: 200000          # raise if capture.kernel_drops grows
+    block-size: 1048576
+    # A SPAN port sees frames whose checksums were offloaded on the sender,
+    # so never trust checksums on a sensor:
+    checksum-checks: no
+
+# Promiscuous listening on a mirror port: don't try to be a host
+pcap:
+  - interface: eth0
+
+##
+## Outputs — EVE JSON is what Splunk consumes
+##
+default-log-dir: /var/log/suricata/
+
+stats:
+  enabled: yes
+  interval: 60
+
+outputs:
+  # Primary output: everything into one JSON stream for Splunk
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      # Uncomment to cap disk usage with built-in rotation:
+      # rotate-interval: day
+      pcap-file: false
+      community-id: yes        # correlate with Zeek/other sensors in Splunk
+      community-id-seed: 0
+      types:
+        - alert:
+            payload: yes             # base64 payload in alert events
+            payload-buffer-size: 4kb
+            payload-printable: yes
+            packet: yes
+            metadata: yes
+            http-body: yes
+            http-body-printable: yes
+            tagged-packets: yes
+        - anomaly:
+            enabled: yes
+            types:
+              decode: yes
+              stream: yes
+              applayer: yes
+        - http:
+            extended: yes
+        - dns:
+            version: 2
+        - tls:
+            extended: yes
+            ja3: yes                 # TLS client fingerprinting
+            ja4: yes
+        - files:
+            force-magic: yes
+            force-hash: [md5, sha256]
+        - smtp:
+            extended: yes
+        - ftp
+        - rdp
+        - nfs
+        - smb
+        - ssh
+        - dhcp:
+            enabled: yes
+            extended: no
+        - krb5
+        - ikev2
+        - snmp
+        - flow                       # bidirectional flow records (NetFlow-like)
+        - stats:
+            totals: yes
+            threads: no
+            deltas: no
+
+  # Human-readable alert log (handy for quick tail -f on the box)
+  - fast:
+      enabled: yes
+      filename: fast.log
+      append: yes
+
+  # Extracted-file store — off by default, enable for malware carving
+  - file-store:
+      version: 2
+      enabled: no
+
+logging:
+  default-log-level: notice
+  outputs:
+    - console:
+        enabled: yes
+    - file:
+        enabled: yes
+        level: info
+        filename: suricata.log
+    - syslog:
+        enabled: no
+
+##
+## App-layer protocol parsers
+##
+app-layer:
+  protocols:
+    krb5:
+      enabled: yes
+    snmp:
+      enabled: yes
+    ikev2:
+      enabled: yes
+    tls:
+      enabled: yes
+      detection-ports:
+        dp: 443
+      # Keep inspecting after handshake for JA3/JA4 + cert logging
+      encryption-handling: default
+    dcerpc:
+      enabled: yes
+    ftp:
+      enabled: yes
+    rdp:
+      enabled: yes
+    ssh:
+      enabled: yes
+    http2:
+      enabled: yes
+    smtp:
+      enabled: yes
+      raw-extraction: no
+      mime:
+        decode-mime: yes
+        decode-base64: yes
+        decode-quoted-printable: yes
+        header-value-depth: 2000
+        extract-urls: yes
+        body-md5: yes
+    imap:
+      enabled: detection-only
+    smb:
+      enabled: yes
+      detection-ports:
+        dp: 139, 445
+    nfs:
+      enabled: yes
+    tftp:
+      enabled: yes
+    dns:
+      tcp:
+        enabled: yes
+        detection-ports:
+          dp: 53
+      udp:
+        enabled: yes
+        detection-ports:
+          dp: 53
+    http:
+      enabled: yes
+      libhtp:
+        default-config:
+          personality: IDS
+          request-body-limit: 100kb
+          response-body-limit: 100kb
+          request-body-minimal-inspect-size: 32kb
+          request-body-inspect-window: 4kb
+          response-body-minimal-inspect-size: 40kb
+          response-body-inspect-window: 16kb
+          response-body-decompress-layer-limit: 2
+          http-body-inline: auto
+          swf-decompression:
+            enabled: no
+          double-decode-path: no
+          double-decode-query: no
+    modbus:
+      enabled: no
+      detection-ports:
+        dp: 502
+    dnp3:
+      enabled: no
+      detection-ports:
+        dp: 20000
+    enip:
+      enabled: no
+      detection-ports:
+        dp: 44818
+        sp: 44818
+    ntp:
+      enabled: yes
+    dhcp:
+      enabled: yes
+    sip:
+      enabled: yes
+
+# Reassembly / flow limits — sane defaults for a mid-size network.
+# Raise memcaps if eve stats show *.memcap drops.
+flow:
+  memcap: 256mb
+  hash-size: 65536
+  prealloc: 10000
+  emergency-recovery: 30
+
+stream:
+  memcap: 256mb
+  checksum-validation: no       # must match capture checksum-checks
+  inline: no                    # IDS mode — never inline
+  reassembly:
+    memcap: 512mb
+    depth: 1mb
+    toserver-chunk-size: 2560
+    toclient-chunk-size: 2560
+    randomize-chunk-size: yes
+
+defrag:
+  memcap: 32mb
+  hash-size: 65536
+  trackers: 65535
+  max-frags: 65535
+  prealloc: yes
+  timeout: 60
+
+host:
+  hash-size: 4096
+  prealloc: 1000
+  memcap: 32mb
+
+##
+## Detection engine
+##
+detect:
+  profile: medium
+  custom-values:
+    toclient-groups: 3
+    toserver-groups: 25
+  sgh-mpm-context: auto
+  inspection-recursion-limit: 3000
+
+mpm-algo: auto
+spm-algo: auto
+
+threading:
+  set-cpu-affinity: no
+  detect-thread-ratio: 1.0
+
+##
+## Rules
+##
+default-rule-path: /var/lib/suricata/rules
+
+rule-files:
+  - suricata.rules      # written by suricata-update (ET Open + your sources)
+  - local.rules         # your own custom rules
+
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
+threshold-file: /etc/suricata/threshold.config
+
+##
+## Misc runtime
+##
+run-as:
+  user: suricata
+  group: suricata
+
+unix-command:
+  enabled: auto
+  # filename: custom.socket
+
+# Live rule reloads via `suricatasc -c reload-rules` / SIGUSR2 — no restart
+detect-engine:
+  - rule-reload: true
+
+host-mode: sniffer-only    # sensor is passive; don't treat local IPs specially
+
+# Suppress decoder noise from mirror ports carrying tunnels
+decoder:
+  teredo:
+    enabled: true
+    ports: $TEREDO_PORTS
+  vxlan:
+    enabled: true
+    ports: $VXLAN_PORTS
+  geneve:
+    enabled: true
+    ports: $GENEVE_PORTS
