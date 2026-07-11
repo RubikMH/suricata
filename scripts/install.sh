@@ -35,7 +35,13 @@ if [[ "${ID:-}" == "ubuntu" ]]; then
     add-apt-repository -y ppa:oisf/suricata-stable   # latest stable from upstream
     apt-get update -qq
 fi
-apt-get install -y suricata suricata-update jq ethtool
+# Modern suricata packages (>=7) bundle suricata-update. Installing the
+# standalone suricata-update alongside them conflicts on /usr/bin/suricata-update,
+# so only add it if the suricata package doesn't already provide it.
+apt-get install -y suricata jq ethtool
+if ! command -v suricata-update >/dev/null 2>&1; then
+    apt-get install -y suricata-update
+fi
 
 echo "==> Deploying configuration"
 install -m 640 -o root -g suricata "$REPO_DIR/config/suricata.yaml" /etc/suricata/suricata.yaml
