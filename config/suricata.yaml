@@ -12,7 +12,7 @@
 vars:
   address-groups:
     # >>> CHANGE ME: list every internal range you own <<<
-    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    HOME_NET: "[192.168.30.0/27]"
     EXTERNAL_NET: "!$HOME_NET"
 
     HTTP_SERVERS: "$HOME_NET"
@@ -46,7 +46,7 @@ vars:
 ## Capture: AF_PACKET (Linux, passive IDS)
 ##
 af-packet:
-  - interface: eth0            # >>> CHANGE ME: your mirror/SPAN interface <<<
+  - interface: ens18
     cluster-id: 99
     cluster-type: cluster_flow # keep flows on the same thread
     defrag: yes
@@ -60,7 +60,7 @@ af-packet:
 
 # Promiscuous listening on a mirror port: don't try to be a host
 pcap:
-  - interface: eth0
+  - interface: ens18
 
 ##
 ## Outputs — EVE JSON is what Splunk consumes

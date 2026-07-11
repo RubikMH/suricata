@@ -23,20 +23,21 @@ shipping its alerts/events to Splunk.
 
 ## Quick start
 
-### 1. Edit the two things you MUST change
+### 1. Network settings (already set for this deployment)
 
-Open `config/suricata.yaml` and set:
+`config/suricata.yaml` is preconfigured for:
 
-- **`HOME_NET`** — your internal network ranges, e.g.
-  `"[192.168.1.0/24,10.0.0.0/8]"`. Getting this right is the single most
-  important tuning step: almost every rule decides direction based on it.
-- **Capture interface** — under `af-packet:`, change `interface: eth0` to the
-  NIC that sees your traffic (check with `ip -br link`).
+- **`HOME_NET`**: `192.168.30.0/27` — add any other internal ranges you own
+- **Capture interface**: `ens18`
+
+If either changes, edit them at the top of the file. `HOME_NET` is the
+single most important tuning knob: almost every rule decides direction
+based on it.
 
 ### 2. Install
 
 ```bash
-sudo ./scripts/install.sh eth0        # pass your capture interface
+sudo ./scripts/install.sh ens18
 ```
 
 The script:
@@ -67,6 +68,15 @@ See [`splunk/README.md`](splunk/README.md). Short version:
   **"Splunk TA for Suricata"** (or use `splunk/props.conf`) on your indexers.
 - In Splunk, install the **"Splunk App for Suricata"** dashboards, or just
   search `index=suricata sourcetype=suricata event_type=alert`.
+
+## MITRE ATT&CK coverage
+
+Alerts are tagged with MITRE technique IDs (from ET Open metadata and our
+custom rules in `config/local.rules`), and
+`splunk/lookups/mitre_techniques.csv` maps them against the full technique
+list. See [`splunk/MITRE-COVERAGE.md`](splunk/MITRE-COVERAGE.md) for the
+Splunk searches and an honest breakdown of what a network IDS can and
+cannot detect from that list.
 
 ## Where to put the sensor
 

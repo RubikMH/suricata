@@ -1,0 +1,698 @@
+technique_id,technique_name,tactics,platforms,is_subtechnique
+T1001,Data Obfuscation,Command And Control,ESXi|Linux|macOS|Windows,false
+T1001.001,Junk Data,Command And Control,ESXi|Linux|macOS|Windows,true
+T1001.002,Steganography,Command And Control,Linux|macOS|Windows|ESXi,true
+T1001.003,Protocol or Service Impersonation,Command And Control,ESXi|Linux|macOS|Windows,true
+T1003,OS Credential Dumping,Credential Access,Linux|macOS|Windows,false
+T1003.001,LSASS Memory,Credential Access,Windows,true
+T1003.002,Security Account Manager,Credential Access,Windows,true
+T1003.003,NTDS,Credential Access,Windows,true
+T1003.004,LSA Secrets,Credential Access,Windows,true
+T1003.005,Cached Domain Credentials,Credential Access,Windows|Linux,true
+T1003.006,DCSync,Credential Access,Windows,true
+T1003.007,Proc Filesystem,Credential Access,Linux,true
+T1003.008,/etc/passwd and /etc/shadow,Credential Access,Linux,true
+T1005,Data from Local System,Collection,ESXi|Linux|macOS|Network Devices|Windows,false
+T1006,Direct Volume Access,Stealth,Network Devices|Windows,false
+T1007,System Service Discovery,Discovery,Linux|macOS|Windows,false
+T1008,Fallback Channels,Command And Control,ESXi|Linux|macOS|Windows,false
+T1010,Application Window Discovery,Discovery,Linux|macOS|Windows,false
+T1011,Exfiltration Over Other Network Medium,Exfiltration,Linux|macOS|Windows,false
+T1011.001,Exfiltration Over Bluetooth,Exfiltration,Linux|macOS|Windows,true
+T1012,Query Registry,Discovery,Windows,false
+T1014,Rootkit,Stealth,Linux|macOS|Windows,false
+T1016,System Network Configuration Discovery,Discovery,ESXi|Linux|macOS|Network Devices|Windows,false
+T1016.001,Internet Connection Discovery,Discovery,Windows|Linux|macOS|ESXi,true
+T1016.002,Wi-Fi Discovery,Discovery,Linux|Windows|macOS,true
+T1018,Remote System Discovery,Discovery,ESXi|Linux|macOS|Network Devices|Windows,false
+T1020,Automated Exfiltration,Exfiltration,Linux|macOS|Network Devices|Windows,false
+T1020.001,Traffic Duplication,Exfiltration,Network Devices|IaaS,true
+T1021,Remote Services,Lateral Movement,Linux|macOS|Windows|IaaS|ESXi,false
+T1021.001,Remote Desktop Protocol,Lateral Movement,Windows,true
+T1021.002,SMB/Windows Admin Shares,Lateral Movement,Windows,true
+T1021.003,Distributed Component Object Model,Lateral Movement,Windows,true
+T1021.004,SSH,Lateral Movement,ESXi|Linux|macOS,true
+T1021.005,VNC,Lateral Movement,Linux|Windows|macOS,true
+T1021.006,Windows Remote Management,Lateral Movement,Windows,true
+T1021.007,Cloud Services,Lateral Movement,IaaS|Identity Provider|Office Suite|SaaS,true
+T1021.008,Direct Cloud VM Connections,Lateral Movement,IaaS,true
+T1025,Data from Removable Media,Collection,Linux|macOS|Windows,false
+T1027,Obfuscated Files or Information,Stealth,ESXi|Linux|macOS|Network Devices|Windows,false
+T1027.001,Binary Padding,Stealth,Linux|macOS|Windows,true
+T1027.002,Software Packing,Stealth,Linux|macOS|Windows,true
+T1027.003,Steganography,Stealth,Linux|macOS|Windows,true
+T1027.004,Compile After Delivery,Stealth,Linux|macOS|Windows,true
+T1027.005,Indicator Removal from Tools,Stealth,Linux|macOS|Windows,true
+T1027.006,HTML Smuggling,Stealth,Linux|macOS|Windows,true
+T1027.007,Dynamic API Resolution,Stealth,Windows,true
+T1027.008,Stripped Payloads,Stealth,Linux|macOS|Network Devices|Windows,true
+T1027.009,Embedded Payloads,Stealth,Linux|macOS|Windows,true
+T1027.010,Command Obfuscation,Stealth,Linux|macOS|Windows,true
+T1027.011,Fileless Storage,Stealth,Linux|Windows,true
+T1027.012,LNK Icon Smuggling,Stealth,Windows,true
+T1027.013,Encrypted/Encoded File,Stealth,Linux|macOS|Windows,true
+T1027.014,Polymorphic Code,Stealth,Linux|macOS|Windows,true
+T1027.015,Compression,Stealth,Linux|macOS|Windows,true
+T1027.016,Junk Code Insertion,Stealth,Linux|macOS|Windows,true
+T1027.017,SVG Smuggling,Stealth,Linux|macOS|Windows,true
+T1027.018,Invisible Unicode,Stealth,Linux|macOS|Windows,true
+T1029,Scheduled Transfer,Exfiltration,Linux|macOS|Windows,false
+T1030,Data Transfer Size Limits,Exfiltration,Linux|macOS|Windows|ESXi,false
+T1033,System Owner/User Discovery,Discovery,Linux|macOS|Network Devices|Windows,false
+T1036,Masquerading,Stealth,Containers|ESXi|Linux|macOS|Windows,false
+T1036.001,Invalid Code Signature,Stealth,macOS|Windows,true
+T1036.002,Right-to-Left Override,Stealth,Linux|macOS|Windows,true
+T1036.003,Rename Legitimate Utilities,Stealth,Linux|macOS|Windows,true
+T1036.004,Masquerade Task or Service,Stealth,Linux|macOS|Windows,true
+T1036.005,Match Legitimate Resource Name or Location,Stealth,Containers|ESXi|Linux|macOS|Windows,true
+T1036.006,Space after Filename,Stealth,Linux|macOS,true
+T1036.007,Double File Extension,Stealth,Windows,true
+T1036.008,Masquerade File Type,Stealth,Linux|macOS|Windows,true
+T1036.009,Break Process Trees,Stealth,Linux|macOS,true
+T1036.010,Masquerade Account Name,Stealth,Containers|IaaS|Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,true
+T1036.011,Overwrite Process Arguments,Stealth,Linux,true
+T1036.012,Browser Fingerprint,Stealth,Linux|macOS|Windows,true
+T1037,Boot or Logon Initialization Scripts,Persistence|Privilege Escalation,ESXi|Linux|macOS|Network Devices|Windows,false
+T1037.001,Logon Script (Windows),Persistence|Privilege Escalation,Windows,true
+T1037.002,Login Hook,Persistence|Privilege Escalation,macOS,true
+T1037.003,Network Logon Script,Persistence|Privilege Escalation,Windows,true
+T1037.004,RC Scripts,Persistence|Privilege Escalation,macOS|Linux|Network Devices|ESXi,true
+T1037.005,Startup Items,Persistence|Privilege Escalation,macOS,true
+T1039,Data from Network Shared Drive,Collection,Linux|macOS|Windows,false
+T1040,Network Sniffing,Credential Access|Discovery,IaaS|Linux|macOS|Network Devices|Windows,false
+T1041,Exfiltration Over C2 Channel,Exfiltration,ESXi|Linux|macOS|Windows,false
+T1046,Network Service Discovery,Discovery,Containers|IaaS|Linux|macOS|Network Devices|Windows,false
+T1047,Windows Management Instrumentation,Execution,Windows,false
+T1048,Exfiltration Over Alternative Protocol,Exfiltration,ESXi|IaaS|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,false
+T1048.001,Exfiltration Over Symmetric Encrypted Non-C2 Protocol,Exfiltration,Linux|macOS|Windows|ESXi,true
+T1048.002,Exfiltration Over Asymmetric Encrypted Non-C2 Protocol,Exfiltration,ESXi|Linux|macOS|Windows,true
+T1048.003,Exfiltration Over Unencrypted Non-C2 Protocol,Exfiltration,ESXi|Linux|macOS|Network Devices|Windows,true
+T1049,System Network Connections Discovery,Discovery,ESXi|IaaS|Linux|macOS|Network Devices|Windows,false
+T1052,Exfiltration Over Physical Medium,Exfiltration,Linux|macOS|Windows,false
+T1052.001,Exfiltration over USB,Exfiltration,Linux|Windows|macOS,true
+T1053,Scheduled Task/Job,Execution|Persistence|Privilege Escalation,Containers|ESXi|Linux|macOS|Network Devices|Windows,false
+T1053.002,At,Execution|Persistence|Privilege Escalation,Windows|Linux|macOS,true
+T1053.003,Cron,Execution|Persistence|Privilege Escalation,Linux|macOS|ESXi,true
+T1053.005,Scheduled Task,Execution|Persistence|Privilege Escalation,Windows,true
+T1053.006,Systemd Timers,Execution|Persistence|Privilege Escalation,Linux,true
+T1053.007,Container Orchestration Job,Execution|Persistence|Privilege Escalation,Containers,true
+T1055,Process Injection,Stealth|Privilege Escalation,Linux|macOS|Windows,false
+T1055.001,Dynamic-link Library Injection,Stealth|Privilege Escalation,Windows,true
+T1055.002,Portable Executable Injection,Stealth|Privilege Escalation,Windows,true
+T1055.003,Thread Execution Hijacking,Stealth|Privilege Escalation,Windows,true
+T1055.004,Asynchronous Procedure Call,Stealth|Privilege Escalation,Windows,true
+T1055.005,Thread Local Storage,Stealth|Privilege Escalation,Windows,true
+T1055.008,Ptrace System Calls,Stealth|Privilege Escalation,Linux,true
+T1055.009,Proc Memory,Stealth|Privilege Escalation,Linux,true
+T1055.011,Extra Window Memory Injection,Stealth|Privilege Escalation,Windows,true
+T1055.012,Process Hollowing,Stealth|Privilege Escalation,Windows,true
+T1055.013,Process Doppelgänging,Stealth|Privilege Escalation,Windows,true
+T1055.014,VDSO Hijacking,Stealth|Privilege Escalation,Linux,true
+T1055.015,ListPlanting,Stealth|Privilege Escalation,Windows,true
+T1056,Input Capture,Collection|Credential Access,Linux|macOS|Network Devices|Windows,false
+T1056.001,Keylogging,Collection|Credential Access,Linux|macOS|Network Devices|Windows,true
+T1056.002,GUI Input Capture,Collection|Credential Access,Linux|macOS|Windows,true
+T1056.003,Web Portal Capture,Collection|Credential Access,Linux|macOS|Windows,true
+T1056.004,Credential API Hooking,Collection|Credential Access,Windows|Linux|macOS,true
+T1057,Process Discovery,Discovery,ESXi|Linux|macOS|Network Devices|Windows,false
+T1059,Command and Scripting Interpreter,Execution,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,false
+T1059.001,PowerShell,Execution,Windows,true
+T1059.002,AppleScript,Execution,macOS,true
+T1059.003,Windows Command Shell,Execution,Windows,true
+T1059.004,Unix Shell,Execution,ESXi|Linux|macOS|Network Devices,true
+T1059.005,Visual Basic,Execution,Linux|macOS|Windows,true
+T1059.006,Python,Execution,ESXi|Linux|macOS|Windows,true
+T1059.007,JavaScript,Execution,Linux|macOS|Windows,true
+T1059.008,Network Device CLI,Execution,Network Devices,true
+T1059.009,Cloud API,Execution,IaaS|Identity Provider|Office Suite|SaaS,true
+T1059.010,AutoHotKey & AutoIT,Execution,Windows,true
+T1059.011,Lua,Execution,Linux|Network Devices|Windows|macOS,true
+T1059.012,Hypervisor CLI,Execution,ESXi,true
+T1059.013,Container CLI/API,Execution,Containers,true
+T1068,Exploitation for Privilege Escalation,Privilege Escalation,Containers|Linux|macOS|Windows,false
+T1069,Permission Groups Discovery,Discovery,Containers|IaaS|Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,false
+T1069.001,Local Groups,Discovery,Linux|macOS|Windows,true
+T1069.002,Domain Groups,Discovery,Linux|macOS|Windows,true
+T1069.003,Cloud Groups,Discovery,SaaS|IaaS|Office Suite|Identity Provider,true
+T1070,Indicator Removal,Stealth,Containers|ESXi|Linux|macOS|Network Devices|Office Suite|Windows,false
+T1070.003,Clear Command History,Stealth,ESXi|Linux|macOS|Network Devices|Windows,true
+T1070.004,File Deletion,Stealth,ESXi|Linux|macOS|Windows,true
+T1070.005,Network Share Connection Removal,Stealth,Windows,true
+T1070.006,Timestomp,Stealth,ESXi|Linux|macOS|Windows,true
+T1070.007,Clear Network Connection History and Configurations,Stealth,Linux|macOS|Windows|Network Devices,true
+T1070.008,Clear Mailbox Data,Stealth,Linux|macOS|Office Suite|Windows,true
+T1070.009,Clear Persistence,Stealth,ESXi|Linux|macOS|Windows,true
+T1070.010,Relocate Malware,Stealth,Linux|macOS|Network Devices|Windows,true
+T1071,Application Layer Protocol,Command And Control,Linux|macOS|Windows|Network Devices|ESXi,false
+T1071.001,Web Protocols,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1071.002,File Transfer Protocols,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1071.003,Mail Protocols,Command And Control,Linux|macOS|Network Devices|Windows,true
+T1071.004,DNS,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1071.005,Publish/Subscribe Protocols,Command And Control,macOS|Linux|Windows|Network Devices,true
+T1072,Software Deployment Tools,Execution|Lateral Movement,Linux|macOS|Network Devices|SaaS|Windows,false
+T1074,Data Staged,Collection,ESXi|IaaS|Linux|macOS|Windows,false
+T1074.001,Local Data Staging,Collection,ESXi|Linux|macOS|Windows,true
+T1074.002,Remote Data Staging,Collection,ESXi|IaaS|Linux|macOS|Windows,true
+T1078,Valid Accounts,Stealth|Persistence|Privilege Escalation|Initial Access,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,false
+T1078.001,Default Accounts,Stealth|Persistence|Privilege Escalation|Initial Access,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,true
+T1078.002,Domain Accounts,Stealth|Persistence|Privilege Escalation|Initial Access,ESXi|Linux|macOS|Windows,true
+T1078.003,Local Accounts,Stealth|Persistence|Privilege Escalation|Initial Access,Containers|ESXi|Linux|macOS|Network Devices|Windows,true
+T1078.004,Cloud Accounts,Stealth|Persistence|Privilege Escalation|Initial Access,IaaS|Identity Provider|Office Suite|SaaS,true
+T1080,Taint Shared Content,Lateral Movement,Windows|SaaS|Linux|macOS|Office Suite,false
+T1082,System Information Discovery,Discovery,ESXi|IaaS|Linux|macOS|Network Devices|Windows,false
+T1083,File and Directory Discovery,Discovery,ESXi|Linux|macOS|Network Devices|Windows,false
+T1087,Account Discovery,Discovery,ESXi|IaaS|Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,false
+T1087.001,Local Account,Discovery,ESXi|Linux|macOS|Windows,true
+T1087.002,Domain Account,Discovery,Linux|macOS|Windows,true
+T1087.003,Email Account,Discovery,Windows|Office Suite,true
+T1087.004,Cloud Account,Discovery,IaaS|Identity Provider|Office Suite|SaaS,true
+T1090,Proxy,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,false
+T1090.001,Internal Proxy,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1090.002,External Proxy,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1090.003,Multi-hop Proxy,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1090.004,Domain Fronting,Command And Control,Linux|macOS|Windows|ESXi,true
+T1091,Replication Through Removable Media,Lateral Movement|Initial Access,Windows,false
+T1092,Communication Through Removable Media,Command And Control,Linux|macOS|Windows,false
+T1095,Non-Application Layer Protocol,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,false
+T1098,Account Manipulation,Persistence|Privilege Escalation,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,false
+T1098.001,Additional Cloud Credentials,Persistence|Privilege Escalation,IaaS|Identity Provider|SaaS,true
+T1098.002,Additional Email Delegate Permissions,Persistence|Privilege Escalation,Windows|Office Suite,true
+T1098.003,Additional Cloud Roles,Persistence|Privilege Escalation,IaaS|Identity Provider|Office Suite|SaaS,true
+T1098.004,SSH Authorized Keys,Persistence|Privilege Escalation,ESXi|IaaS|Linux|macOS|Network Devices,true
+T1098.005,Device Registration,Persistence|Privilege Escalation,Windows|Identity Provider,true
+T1098.006,Additional Container Cluster Roles,Persistence|Privilege Escalation,Containers,true
+T1098.007,Additional Local or Domain Groups,Persistence|Privilege Escalation,Windows|macOS|Linux,true
+T1102,Web Service,Command And Control,ESXi|Linux|macOS|Windows,false
+T1102.001,Dead Drop Resolver,Command And Control,ESXi|Linux|macOS|Windows,true
+T1102.002,Bidirectional Communication,Command And Control,ESXi|Linux|macOS|Windows,true
+T1102.003,One-Way Communication,Command And Control,Linux|macOS|Windows|ESXi,true
+T1104,Multi-Stage Channels,Command And Control,Linux|macOS|Windows|ESXi,false
+T1105,Ingress Tool Transfer,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,false
+T1106,Native API,Execution,Linux|macOS|Windows,false
+T1110,Brute Force,Credential Access,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,false
+T1110.001,Password Guessing,Credential Access,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,true
+T1110.002,Password Cracking,Credential Access,Identity Provider|Linux|macOS|Network Devices|Office Suite|Windows,true
+T1110.003,Password Spraying,Credential Access,Containers|ESXi|IaaS|Identity Provider|Linux|Network Devices|Office Suite|SaaS|Windows|macOS,true
+T1110.004,Credential Stuffing,Credential Access,Containers|ESXi|IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,true
+T1111,Multi-Factor Authentication Interception,Credential Access,Linux|macOS|Windows,false
+T1112,Modify Registry,Defense Impairment|Persistence,Windows,false
+T1113,Screen Capture,Collection,Linux|macOS|Windows,false
+T1114,Email Collection,Collection,Windows|macOS|Linux|Office Suite,false
+T1114.001,Local Email Collection,Collection,Windows,true
+T1114.002,Remote Email Collection,Collection,Office Suite|Windows,true
+T1114.003,Email Forwarding Rule,Collection,Linux|macOS|Office Suite|Windows,true
+T1115,Clipboard Data,Collection,Linux|macOS|Windows,false
+T1119,Automated Collection,Collection,IaaS|Linux|macOS|Office Suite|SaaS|Windows,false
+T1120,Peripheral Device Discovery,Discovery,Linux|macOS|Windows,false
+T1123,Audio Capture,Collection,Linux|macOS|Windows,false
+T1124,System Time Discovery,Discovery,ESXi|Linux|macOS|Network Devices|Windows,false
+T1125,Video Capture,Collection,Linux|macOS|Windows,false
+T1127,Trusted Developer Utilities Proxy Execution,Stealth|Execution,Windows,false
+T1127.001,MSBuild,Stealth|Execution,Windows,true
+T1127.002,ClickOnce,Stealth|Execution,Windows,true
+T1127.003,JamPlus,Stealth|Execution,Windows,true
+T1129,Shared Modules,Execution,Linux|macOS|Windows,false
+T1132,Data Encoding,Command And Control,ESXi|Linux|macOS|Windows,false
+T1132.001,Standard Encoding,Command And Control,ESXi|Linux|macOS|Windows,true
+T1132.002,Non-Standard Encoding,Command And Control,ESXi|Linux|macOS|Windows,true
+T1133,External Remote Services,Persistence|Initial Access,Containers|Linux|macOS|Windows,false
+T1134,Access Token Manipulation,Stealth|Privilege Escalation,Windows,false
+T1134.001,Token Impersonation/Theft,Stealth|Privilege Escalation,Windows,true
+T1134.002,Create Process with Token,Stealth|Privilege Escalation,Windows,true
+T1134.003,Make and Impersonate Token,Stealth|Privilege Escalation,Windows,true
+T1134.004,Parent PID Spoofing,Stealth|Privilege Escalation,Windows,true
+T1134.005,SID-History Injection,Stealth|Privilege Escalation,Windows,true
+T1135,Network Share Discovery,Discovery,Linux|macOS|Windows,false
+T1136,Create Account,Persistence,Windows|IaaS|Linux|macOS|Network Devices|Containers|SaaS|Office Suite|Identity Provider|ESXi,false
+T1136.001,Local Account,Persistence,Containers|ESXi|Linux|macOS|Network Devices|Windows,true
+T1136.002,Domain Account,Persistence,Linux|macOS|Windows,true
+T1136.003,Cloud Account,Persistence,IaaS|SaaS|Office Suite|Identity Provider,true
+T1137,Office Application Startup,Persistence,Windows|Office Suite,false
+T1137.001,Office Template Macros,Persistence,Office Suite|Windows,true
+T1137.002,Office Test,Persistence,Windows|Office Suite,true
+T1137.003,Outlook Forms,Persistence,Windows|Office Suite,true
+T1137.004,Outlook Home Page,Persistence,Windows|Office Suite,true
+T1137.005,Outlook Rules,Persistence,Windows|Office Suite,true
+T1137.006,Add-ins,Persistence,Windows|Office Suite,true
+T1140,Deobfuscate/Decode Files or Information,Stealth,ESXi|Linux|macOS|Windows,false
+T1176,Software Extensions,Persistence,Linux|macOS|Windows,false
+T1176.001,Browser Extensions,Persistence,Linux|Windows|macOS,true
+T1176.002,IDE Extensions,Persistence,Linux|macOS|Windows,true
+T1185,Browser Session Hijacking,Collection,Windows,false
+T1187,Forced Authentication,Credential Access,Windows,false
+T1189,Drive-by Compromise,Initial Access,Identity Provider|Linux|macOS|Windows,false
+T1190,Exploit Public-Facing Application,Initial Access,Containers|ESXi|IaaS|Linux|macOS|Network Devices|Windows,false
+T1195,Supply Chain Compromise,Initial Access,Linux|Windows|macOS|SaaS,false
+T1195.001,Compromise Software Dependencies and Development Tools,Initial Access,Linux|macOS|Windows,true
+T1195.002,Compromise Software Supply Chain,Initial Access,Linux|Windows|macOS,true
+T1195.003,Compromise Hardware Supply Chain,Initial Access,Linux|macOS|Windows,true
+T1197,BITS Jobs,Stealth|Persistence|Execution,Windows,false
+T1199,Trusted Relationship,Initial Access,IaaS|Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,false
+T1200,Hardware Additions,Initial Access,Windows|Linux|macOS,false
+T1201,Password Policy Discovery,Discovery,Windows|Linux|macOS|IaaS|Network Devices|Identity Provider|SaaS|Office Suite,false
+T1202,Indirect Command Execution,Stealth,Windows,false
+T1203,Exploitation for Client Execution,Execution,Linux|macOS|Windows,false
+T1204,User Execution,Execution,Linux|Windows|macOS|IaaS|Containers,false
+T1204.001,Malicious Link,Execution,Linux|macOS|Windows,true
+T1204.002,Malicious File,Execution,Linux|macOS|Windows,true
+T1204.003,Malicious Image,Execution,IaaS|Containers,true
+T1204.004,Malicious Copy and Paste,Execution,Linux|macOS|Windows,true
+T1204.005,Malicious Library,Execution,Linux|macOS|Windows,true
+T1205,Traffic Signaling,Stealth|Persistence|Command And Control,Linux|macOS|Network Devices|Windows,false
+T1205.001,Port Knocking,Stealth|Persistence|Command And Control,Linux|macOS|Network Devices|Windows,true
+T1205.002,Socket Filters,Stealth|Persistence|Command And Control,Linux|macOS|Windows,true
+T1207,Rogue Domain Controller,Defense Impairment,Windows,false
+T1210,Exploitation of Remote Services,Lateral Movement,Linux|Windows|macOS|ESXi,false
+T1211,Exploitation for Stealth,Stealth,Linux|Windows|macOS|SaaS|IaaS,false
+T1212,Exploitation for Credential Access,Credential Access,Linux|Windows|macOS|Identity Provider,false
+T1213,Data from Information Repositories,Collection,Linux|Windows|macOS|SaaS|IaaS|Office Suite,false
+T1213.001,Confluence,Collection,SaaS,true
+T1213.002,Sharepoint,Collection,Office Suite|Windows,true
+T1213.003,Code Repositories,Collection,SaaS,true
+T1213.004,Customer Relationship Management Software,Collection,SaaS,true
+T1213.005,Messaging Applications,Collection,Office Suite|SaaS,true
+T1213.006,Databases,Collection,IaaS|Linux|macOS|SaaS|Windows,true
+T1216,System Script Proxy Execution,Stealth,Windows,false
+T1216.001,PubPrn,Stealth,Windows,true
+T1216.002,SyncAppvPublishingServer,Stealth,Windows,true
+T1217,Browser Information Discovery,Discovery,Linux|macOS|Windows,false
+T1218,System Binary Proxy Execution,Stealth,Linux|macOS|Windows,false
+T1218.001,Compiled HTML File,Stealth,Windows,true
+T1218.002,Control Panel,Stealth,Windows,true
+T1218.003,CMSTP,Stealth,Windows,true
+T1218.004,InstallUtil,Stealth,Windows,true
+T1218.005,Mshta,Stealth,Windows,true
+T1218.007,Msiexec,Stealth,Windows,true
+T1218.008,Odbcconf,Stealth,Windows,true
+T1218.009,Regsvcs/Regasm,Stealth,Windows,true
+T1218.010,Regsvr32,Stealth,Windows,true
+T1218.011,Rundll32,Stealth,Windows,true
+T1218.012,Verclsid,Stealth,Windows,true
+T1218.013,Mavinject,Stealth,Windows,true
+T1218.014,MMC,Stealth,Windows,true
+T1218.015,Electron Applications,Stealth,Linux|macOS|Windows,true
+T1219,Remote Access Tools,Command And Control,Linux|macOS|Windows,false
+T1219.001,IDE Tunneling,Command And Control,Linux|macOS|Windows,true
+T1219.002,Remote Desktop Software,Command And Control,Linux|macOS|Windows,true
+T1219.003,Remote Access Hardware,Command And Control,Linux|macOS|Windows,true
+T1220,XSL Script Processing,Stealth,Windows,false
+T1221,Template Injection,Stealth,Windows,false
+T1222,File and Directory Permissions Modification,Defense Impairment,ESXi|Linux|macOS|Windows,false
+T1222.001,Windows Permissions,Defense Impairment,Windows,true
+T1222.002,Linux and Mac Permissions,Defense Impairment,Linux|macOS,true
+T1480,Execution Guardrails,Stealth,ESXi|Linux|macOS|Windows,false
+T1480.001,Environmental Keying,Stealth,Linux|Windows|macOS,true
+T1480.002,Mutual Exclusion,Stealth,Linux|macOS|Windows,true
+T1482,Domain Trust Discovery,Discovery,Windows,false
+T1484,Domain or Tenant Policy Modification,Defense Impairment|Privilege Escalation,Windows|Identity Provider,false
+T1484.001,Group Policy Modification,Defense Impairment|Privilege Escalation,Windows,true
+T1484.002,Trust Modification,Defense Impairment|Privilege Escalation,Identity Provider|Windows,true
+T1485,Data Destruction,Impact,Containers|ESXi|IaaS|Linux|macOS|Windows,false
+T1485.001,Lifecycle-Triggered Deletion,Impact,IaaS,true
+T1486,Data Encrypted for Impact,Impact,ESXi|IaaS|Linux|macOS|Windows,false
+T1489,Service Stop,Impact,ESXi|IaaS|Linux|macOS|Windows,false
+T1490,Inhibit System Recovery,Impact,Containers|ESXi|IaaS|Linux|macOS|Network Devices|Windows,false
+T1491,Defacement,Impact,Windows|IaaS|Linux|macOS|ESXi,false
+T1491.001,Internal Defacement,Impact,ESXi|Linux|macOS|Windows,true
+T1491.002,External Defacement,Impact,Windows|IaaS|Linux|macOS,true
+T1495,Firmware Corruption,Impact,Linux|macOS|Network Devices|Windows,false
+T1496,Resource Hijacking,Impact,Windows|IaaS|Linux|macOS|Containers|SaaS,false
+T1496.001,Compute Hijacking,Impact,Windows|IaaS|Linux|macOS|Containers,true
+T1496.002,Bandwidth Hijacking,Impact,Linux|Windows|macOS|IaaS|Containers,true
+T1496.003,SMS Pumping,Impact,SaaS,true
+T1496.004,Cloud Service Hijacking,Impact,SaaS,true
+T1497,Virtualization/Sandbox Evasion,Stealth|Discovery,Linux|macOS|Windows,false
+T1497.001,System Checks,Stealth|Discovery,Linux|macOS|Windows,true
+T1497.002,User Activity Based Checks,Stealth|Discovery,Linux|macOS|Windows,true
+T1497.003,Time Based Checks,Stealth|Discovery,Linux|macOS|Windows,true
+T1498,Network Denial of Service,Impact,Windows|IaaS|Linux|macOS|Containers,false
+T1498.001,Direct Network Flood,Impact,Windows|IaaS|Linux|macOS,true
+T1498.002,Reflection Amplification,Impact,Windows|IaaS|Linux|macOS,true
+T1499,Endpoint Denial of Service,Impact,Windows|Linux|macOS|Containers|IaaS,false
+T1499.001,OS Exhaustion Flood,Impact,Linux|macOS|Windows,true
+T1499.002,Service Exhaustion Flood,Impact,Windows|IaaS|Linux|macOS,true
+T1499.003,Application Exhaustion Flood,Impact,Windows|IaaS|Linux|macOS,true
+T1499.004,Application or System Exploitation,Impact,Windows|IaaS|Linux|macOS,true
+T1505,Server Software Component,Persistence,Windows|Linux|macOS|Network Devices|ESXi,false
+T1505.001,SQL Stored Procedures,Persistence,Windows|Linux,true
+T1505.002,Transport Agent,Persistence,Linux|Windows,true
+T1505.003,Web Shell,Persistence,Linux|macOS|Network Devices|Windows,true
+T1505.004,IIS Components,Persistence,Windows,true
+T1505.005,Terminal Services DLL,Persistence,Windows,true
+T1505.006,vSphere Installation Bundles,Persistence,ESXi,true
+T1518,Software Discovery,Discovery,ESXi|IaaS|Linux|macOS|Windows,false
+T1518.001,Security Software Discovery,Discovery,IaaS|Linux|macOS|Windows,true
+T1518.002,Backup Software Discovery,Discovery,Windows|macOS|Linux,true
+T1525,Implant Internal Image,Persistence,IaaS|Containers,false
+T1526,Cloud Service Discovery,Discovery,IaaS|Identity Provider|Office Suite|SaaS,false
+T1528,Steal Application Access Token,Credential Access,Containers|IaaS|Identity Provider|Office Suite|SaaS,false
+T1529,System Shutdown/Reboot,Impact,ESXi|Linux|macOS|Network Devices|Windows,false
+T1530,Data from Cloud Storage,Collection,IaaS|Office Suite|SaaS,false
+T1531,Account Access Removal,Impact,Linux|macOS|Windows|SaaS|IaaS|Office Suite|ESXi,false
+T1534,Internal Spearphishing,Lateral Movement,Linux|macOS|Office Suite|SaaS|Windows,false
+T1535,Unused/Unsupported Cloud Regions,Stealth,IaaS,false
+T1537,Transfer Data to Cloud Account,Exfiltration,IaaS|Office Suite|SaaS,false
+T1538,Cloud Service Dashboard,Discovery,IaaS|SaaS|Office Suite|Identity Provider,false
+T1539,Steal Web Session Cookie,Credential Access,Linux|macOS|Office Suite|SaaS|Windows,false
+T1542,Pre-OS Boot,Stealth|Persistence,Linux|macOS|Network Devices|Windows,false
+T1542.001,System Firmware,Stealth|Persistence,Network Devices|Windows,true
+T1542.002,Component Firmware,Stealth|Persistence,Windows|Linux|macOS,true
+T1542.003,Bootkit,Stealth|Persistence,Linux|Windows,true
+T1542.004,ROMMONkit,Stealth|Persistence,Network Devices,true
+T1542.005,TFTP Boot,Stealth|Persistence,Network Devices,true
+T1543,Create or Modify System Process,Persistence|Privilege Escalation,Containers|Linux|macOS|Windows,false
+T1543.001,Launch Agent,Persistence|Privilege Escalation,macOS,true
+T1543.002,Systemd Service,Persistence|Privilege Escalation,Linux,true
+T1543.003,Windows Service,Persistence|Privilege Escalation,Windows,true
+T1543.004,Launch Daemon,Persistence|Privilege Escalation,macOS,true
+T1543.005,Container Service,Persistence|Privilege Escalation,Containers,true
+T1546,Event Triggered Execution,Privilege Escalation|Persistence,Linux|macOS|Windows|SaaS|IaaS|Office Suite,false
+T1546.001,Change Default File Association,Privilege Escalation|Persistence,Windows,true
+T1546.002,Screensaver,Privilege Escalation|Persistence,Windows,true
+T1546.003,Windows Management Instrumentation Event Subscription,Privilege Escalation|Persistence,Windows,true
+T1546.004,Unix Shell Configuration Modification,Privilege Escalation|Persistence,Linux|macOS,true
+T1546.005,Trap,Privilege Escalation|Persistence,macOS|Linux,true
+T1546.006,LC_LOAD_DYLIB Addition,Privilege Escalation|Persistence,macOS,true
+T1546.007,Netsh Helper DLL,Privilege Escalation|Persistence,Windows,true
+T1546.008,Accessibility Features,Privilege Escalation|Persistence,Windows,true
+T1546.009,AppCert DLLs,Privilege Escalation|Persistence,Windows,true
+T1546.010,AppInit DLLs,Privilege Escalation|Persistence,Windows,true
+T1546.011,Application Shimming,Privilege Escalation|Persistence,Windows,true
+T1546.012,Image File Execution Options Injection,Privilege Escalation|Persistence,Windows,true
+T1546.013,PowerShell Profile,Privilege Escalation|Persistence,Windows,true
+T1546.014,Emond,Privilege Escalation|Persistence,macOS,true
+T1546.015,Component Object Model Hijacking,Privilege Escalation|Persistence,Windows,true
+T1546.016,Installer Packages,Privilege Escalation|Persistence,Linux|macOS|Windows,true
+T1546.017,Udev Rules,Persistence|Privilege Escalation,Linux,true
+T1546.018,Python Startup Hooks,Persistence|Privilege Escalation,Linux|macOS|Windows,true
+T1547,Boot or Logon Autostart Execution,Persistence|Privilege Escalation,Linux|macOS|Windows|Network Devices,false
+T1547.001,Registry Run Keys / Startup Folder,Persistence|Privilege Escalation,Windows,true
+T1547.002,Authentication Package,Persistence|Privilege Escalation,Windows,true
+T1547.003,Time Providers,Persistence|Privilege Escalation,Windows,true
+T1547.004,Winlogon Helper DLL,Persistence|Privilege Escalation,Windows,true
+T1547.005,Security Support Provider,Persistence|Privilege Escalation,Windows,true
+T1547.006,Kernel Modules and Extensions,Persistence|Privilege Escalation,macOS|Linux,true
+T1547.007,Re-opened Applications,Persistence|Privilege Escalation,macOS,true
+T1547.008,LSASS Driver,Persistence|Privilege Escalation,Windows,true
+T1547.009,Shortcut Modification,Persistence|Privilege Escalation,Windows,true
+T1547.010,Port Monitors,Persistence|Privilege Escalation,Windows,true
+T1547.012,Print Processors,Persistence|Privilege Escalation,Windows,true
+T1547.013,XDG Autostart Entries,Persistence|Privilege Escalation,Linux,true
+T1547.014,Active Setup,Persistence|Privilege Escalation,Windows,true
+T1547.015,Login Items,Persistence|Privilege Escalation,macOS,true
+T1548,Abuse Elevation Control Mechanism,Privilege Escalation,Linux|macOS|Windows|IaaS|Office Suite|Identity Provider,false
+T1548.001,Setuid and Setgid,Privilege Escalation,Linux|macOS,true
+T1548.002,Bypass User Account Control,Privilege Escalation,Windows,true
+T1548.003,Sudo and Sudo Caching,Privilege Escalation,Linux|macOS,true
+T1548.004,Elevated Execution with Prompt,Privilege Escalation,macOS,true
+T1548.005,Temporary Elevated Cloud Access,Privilege Escalation,IaaS|Office Suite|Identity Provider,true
+T1548.006,TCC Manipulation,Privilege Escalation,macOS,true
+T1550,Use Alternate Authentication Material,Lateral Movement,Containers|IaaS|Identity Provider|Linux|Office Suite|SaaS|Windows,false
+T1550.001,Application Access Token,Lateral Movement,Containers|IaaS|Identity Provider|Office Suite|SaaS,true
+T1550.002,Pass the Hash,Lateral Movement,Windows,true
+T1550.003,Pass the Ticket,Lateral Movement,Windows,true
+T1550.004,Web Session Cookie,Lateral Movement,IaaS|Office Suite|SaaS,true
+T1552,Unsecured Credentials,Credential Access,Windows|SaaS|IaaS|Linux|macOS|Containers|Network Devices|Office Suite|Identity Provider,false
+T1552.001,Credentials In Files,Credential Access,Containers|IaaS|Linux|macOS|Windows,true
+T1552.002,Credentials in Registry,Credential Access,Windows,true
+T1552.003,Shell History,Credential Access,Linux|macOS|Windows,true
+T1552.004,Private Keys,Credential Access,Linux|macOS|Network Devices|Windows,true
+T1552.005,Cloud Instance Metadata API,Credential Access,IaaS,true
+T1552.006,Group Policy Preferences,Credential Access,Windows,true
+T1552.007,Container API,Credential Access,Containers,true
+T1552.008,Chat Messages,Credential Access,SaaS|Office Suite,true
+T1553,Subvert Trust Controls,Defense Impairment,Linux|macOS|Windows,false
+T1553.001,Gatekeeper Bypass,Defense Impairment,macOS,true
+T1553.002,Code Signing,Defense Impairment,macOS|Windows,true
+T1553.003,SIP and Trust Provider Hijacking,Defense Impairment,Windows,true
+T1553.004,Install Root Certificate,Defense Impairment,Linux|macOS|Windows,true
+T1553.005,Mark-of-the-Web Bypass,Defense Impairment,Windows,true
+T1553.006,Code Signing Policy Modification,Defense Impairment,macOS|Windows,true
+T1554,Compromise Host Software Binary,Persistence,ESXi|Linux|macOS|Windows,false
+T1555,Credentials from Password Stores,Credential Access,IaaS|Linux|macOS|Windows,false
+T1555.001,Keychain,Credential Access,macOS,true
+T1555.002,Securityd Memory,Credential Access,Linux|macOS,true
+T1555.003,Credentials from Web Browsers,Credential Access,Linux|macOS|Windows,true
+T1555.004,Windows Credential Manager,Credential Access,Windows,true
+T1555.005,Password Managers,Credential Access,Linux|macOS|Windows,true
+T1555.006,Cloud Secrets Management Stores,Credential Access,IaaS,true
+T1556,Modify Authentication Process,Defense Impairment|Persistence|Credential Access,IaaS|Identity Provider|Linux|macOS|Network Devices|Office Suite|SaaS|Windows,false
+T1556.001,Domain Controller Authentication,Defense Impairment|Persistence|Credential Access,Windows,true
+T1556.002,Password Filter DLL,Defense Impairment|Persistence|Credential Access,Windows,true
+T1556.003,Pluggable Authentication Modules,Defense Impairment|Persistence|Credential Access,Linux|macOS,true
+T1556.004,Network Device Authentication,Defense Impairment|Persistence|Credential Access,Network Devices,true
+T1556.005,Reversible Encryption,Defense Impairment|Persistence|Credential Access,Windows,true
+T1556.006,Multi-Factor Authentication,Defense Impairment|Persistence|Credential Access,IaaS|Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,true
+T1556.007,Hybrid Identity,Defense Impairment|Persistence|Credential Access,IaaS|Identity Provider|Office Suite|SaaS|Windows,true
+T1556.008,Network Provider DLL,Defense Impairment|Persistence|Credential Access,Windows,true
+T1556.009,Conditional Access Policies,Defense Impairment|Persistence|Credential Access,IaaS|Identity Provider,true
+T1557,Adversary-in-the-Middle,Credential Access|Collection,Linux|macOS|Network Devices|Windows,false
+T1557.001,Name Resolution Poisoning and SMB Relay,Credential Access|Collection,Windows,true
+T1557.002,ARP Cache Poisoning,Credential Access|Collection,Linux|Windows|macOS,true
+T1557.003,DHCP Spoofing,Credential Access|Collection,Linux|Windows|macOS,true
+T1557.004,Evil Twin,Credential Access|Collection,Network Devices,true
+T1558,Steal or Forge Kerberos Tickets,Credential Access,Linux|macOS|Windows,false
+T1558.001,Golden Ticket,Credential Access,Windows,true
+T1558.002,Silver Ticket,Credential Access,Windows,true
+T1558.003,Kerberoasting,Credential Access,Windows,true
+T1558.004,AS-REP Roasting,Credential Access,Windows,true
+T1558.005,Ccache Files,Credential Access,Linux|macOS,true
+T1559,Inter-Process Communication,Execution,Linux|macOS|Windows,false
+T1559.001,Component Object Model,Execution,Windows,true
+T1559.002,Dynamic Data Exchange,Execution,Windows,true
+T1559.003,XPC Services,Execution,macOS,true
+T1560,Archive Collected Data,Collection,Linux|macOS|Windows,false
+T1560.001,Archive via Utility,Collection,Linux|macOS|Windows,true
+T1560.002,Archive via Library,Collection,Linux|macOS|Windows,true
+T1560.003,Archive via Custom Method,Collection,Linux|macOS|Windows,true
+T1561,Disk Wipe,Impact,Linux|macOS|Windows|Network Devices,false
+T1561.001,Disk Content Wipe,Impact,Linux|macOS|Network Devices|Windows,true
+T1561.002,Disk Structure Wipe,Impact,Linux|macOS|Network Devices|Windows,true
+T1563,Remote Service Session Hijacking,Lateral Movement,Linux|macOS|Windows,false
+T1563.001,SSH Hijacking,Lateral Movement,Linux|macOS,true
+T1563.002,RDP Hijacking,Lateral Movement,Windows,true
+T1564,Hide Artifacts,Stealth,ESXi|Linux|macOS|Office Suite|Windows,false
+T1564.001,Hidden Files and Directories,Stealth,Linux|macOS|Windows,true
+T1564.002,Hidden Users,Stealth,Linux|macOS|Windows,true
+T1564.003,Hidden Window,Stealth,Linux|macOS|Windows,true
+T1564.004,NTFS File Attributes,Stealth,Windows,true
+T1564.005,Hidden File System,Stealth,Linux|macOS|Windows,true
+T1564.006,Run Virtual Instance,Stealth,ESXi|Linux|macOS|Windows,true
+T1564.007,VBA Stomping,Stealth,Linux|macOS|Windows,true
+T1564.008,Email Hiding Rules,Stealth,Windows|Linux|macOS|Office Suite,true
+T1564.009,Resource Forking,Stealth,macOS,true
+T1564.010,Process Argument Spoofing,Stealth,Windows,true
+T1564.011,Ignore Process Interrupts,Stealth,Linux|macOS|Windows,true
+T1564.012,File/Path Exclusions,Stealth,Linux|macOS|Windows,true
+T1564.013,Bind Mounts,Stealth,Linux,true
+T1564.014,Extended Attributes,Stealth,Linux|macOS,true
+T1565,Data Manipulation,Impact,Linux|macOS|Windows,false
+T1565.001,Stored Data Manipulation,Impact,Linux|macOS|Windows,true
+T1565.002,Transmitted Data Manipulation,Impact,Linux|macOS|Windows,true
+T1565.003,Runtime Data Manipulation,Impact,Linux|macOS|Windows,true
+T1566,Phishing,Initial Access,Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,false
+T1566.001,Spearphishing Attachment,Initial Access,Linux|macOS|Windows,true
+T1566.002,Spearphishing Link,Initial Access,Identity Provider|Linux|macOS|Office Suite|SaaS|Windows,true
+T1566.003,Spearphishing via Service,Initial Access,Linux|macOS|Windows,true
+T1566.004,Spearphishing Voice,Initial Access,Linux|macOS|Windows|Identity Provider,true
+T1567,Exfiltration Over Web Service,Exfiltration,ESXi|Linux|macOS|Office Suite|SaaS|Windows,false
+T1567.001,Exfiltration to Code Repository,Exfiltration,ESXi|Linux|macOS|Windows,true
+T1567.002,Exfiltration to Cloud Storage,Exfiltration,ESXi|Linux|macOS|Windows,true
+T1567.003,Exfiltration to Text Storage Sites,Exfiltration,Linux|macOS|Windows|ESXi,true
+T1567.004,Exfiltration Over Webhook,Exfiltration,ESXi|Linux|macOS|Office Suite|SaaS|Windows,true
+T1568,Dynamic Resolution,Command And Control,ESXi|Linux|macOS|Windows,false
+T1568.001,Fast Flux DNS,Command And Control,Linux|macOS|Windows|ESXi,true
+T1568.002,Domain Generation Algorithms,Command And Control,ESXi|Linux|macOS|Windows,true
+T1568.003,DNS Calculation,Command And Control,ESXi|Linux|macOS|Windows,true
+T1569,System Services,Execution,Windows|macOS|Linux,false
+T1569.001,Launchctl,Execution,macOS,true
+T1569.002,Service Execution,Execution,Windows,true
+T1569.003,Systemctl,Execution,Linux,true
+T1570,Lateral Tool Transfer,Lateral Movement,ESXi|Linux|macOS|Windows,false
+T1571,Non-Standard Port,Command And Control,ESXi|Linux|macOS|Windows,false
+T1572,Protocol Tunneling,Command And Control,ESXi|Linux|macOS|Windows,false
+T1573,Encrypted Channel,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,false
+T1573.001,Symmetric Cryptography,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1573.002,Asymmetric Cryptography,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,true
+T1574,Hijack Execution Flow,Stealth|Execution,Linux|macOS|Windows,false
+T1574.001,DLL,Stealth|Execution,Windows,true
+T1574.004,Dylib Hijacking,Stealth|Execution,macOS,true
+T1574.005,Executable Installer File Permissions Weakness,Stealth|Execution,Windows,true
+T1574.006,Dynamic Linker Hijacking,Stealth|Execution,Linux|macOS,true
+T1574.007,Path Interception by PATH Environment Variable,Stealth|Execution,Linux|macOS|Windows,true
+T1574.008,Path Interception by Search Order Hijacking,Stealth|Execution,Windows,true
+T1574.009,Path Interception by Unquoted Path,Stealth|Execution,Windows,true
+T1574.010,Services File Permissions Weakness,Stealth|Execution,Windows,true
+T1574.011,Services Registry Permissions Weakness,Stealth|Execution,Windows,true
+T1574.012,COR_PROFILER,Stealth|Execution,Windows,true
+T1574.013,KernelCallbackTable,Stealth|Execution,Windows,true
+T1574.014,AppDomainManager,Stealth|Execution,Windows,true
+T1578,Modify Cloud Compute Infrastructure,Defense Impairment,IaaS,false
+T1578.001,Create Snapshot,Defense Impairment,IaaS,true
+T1578.002,Create Cloud Instance,Defense Impairment,IaaS,true
+T1578.003,Delete Cloud Instance,Defense Impairment,IaaS,true
+T1578.004,Revert Cloud Instance,Defense Impairment,IaaS,true
+T1578.005,Modify Cloud Compute Configurations,Defense Impairment,IaaS,true
+T1580,Cloud Infrastructure Discovery,Discovery,IaaS,false
+T1583,Acquire Infrastructure,Resource Development,PRE,false
+T1583.001,Domains,Resource Development,PRE,true
+T1583.002,DNS Server,Resource Development,PRE,true
+T1583.003,Virtual Private Server,Resource Development,PRE,true
+T1583.004,Server,Resource Development,PRE,true
+T1583.005,Botnet,Resource Development,PRE,true
+T1583.006,Web Services,Resource Development,PRE,true
+T1583.007,Serverless,Resource Development,PRE,true
+T1583.008,Malvertising,Resource Development,PRE,true
+T1584,Compromise Infrastructure,Resource Development,PRE,false
+T1584.001,Domains,Resource Development,PRE,true
+T1584.002,DNS Server,Resource Development,PRE,true
+T1584.003,Virtual Private Server,Resource Development,PRE,true
+T1584.004,Server,Resource Development,PRE,true
+T1584.005,Botnet,Resource Development,PRE,true
+T1584.006,Web Services,Resource Development,PRE,true
+T1584.007,Serverless,Resource Development,PRE,true
+T1584.008,Network Devices,Resource Development,PRE,true
+T1585,Establish Accounts,Resource Development,PRE,false
+T1585.001,Social Media Accounts,Resource Development,PRE,true
+T1585.002,Email Accounts,Resource Development,PRE,true
+T1585.003,Cloud Accounts,Resource Development,PRE,true
+T1586,Compromise Accounts,Resource Development,PRE,false
+T1586.001,Social Media Accounts,Resource Development,PRE,true
+T1586.002,Email Accounts,Resource Development,PRE,true
+T1586.003,Cloud Accounts,Resource Development,PRE,true
+T1587,Develop Capabilities,Resource Development,PRE,false
+T1587.001,Malware,Resource Development,PRE,true
+T1587.002,Code Signing Certificates,Resource Development,PRE,true
+T1587.003,Digital Certificates,Resource Development,PRE,true
+T1587.004,Exploits,Resource Development,PRE,true
+T1588,Obtain Capabilities,Resource Development,PRE,false
+T1588.001,Malware,Resource Development,PRE,true
+T1588.002,Tool,Resource Development,PRE,true
+T1588.003,Code Signing Certificates,Resource Development,PRE,true
+T1588.004,Digital Certificates,Resource Development,PRE,true
+T1588.005,Exploits,Resource Development,PRE,true
+T1588.006,Vulnerabilities,Resource Development,PRE,true
+T1588.007,Artificial Intelligence,Resource Development,PRE,true
+T1589,Gather Victim Identity Information,Reconnaissance,PRE,false
+T1589.001,Credentials,Reconnaissance,PRE,true
+T1589.002,Email Addresses,Reconnaissance,PRE,true
+T1589.003,Employee Names,Reconnaissance,PRE,true
+T1590,Gather Victim Network Information,Reconnaissance,PRE,false
+T1590.001,Domain Properties,Reconnaissance,PRE,true
+T1590.002,DNS,Reconnaissance,PRE,true
+T1590.003,Network Trust Dependencies,Reconnaissance,PRE,true
+T1590.004,Network Topology,Reconnaissance,PRE,true
+T1590.005,IP Addresses,Reconnaissance,PRE,true
+T1590.006,Network Security Appliances,Reconnaissance,PRE,true
+T1591,Gather Victim Org Information,Reconnaissance,PRE,false
+T1591.001,Determine Physical Locations,Reconnaissance,PRE,true
+T1591.002,Business Relationships,Reconnaissance,PRE,true
+T1591.003,Identify Business Tempo,Reconnaissance,PRE,true
+T1591.004,Identify Roles,Reconnaissance,PRE,true
+T1592,Gather Victim Host Information,Reconnaissance,PRE,false
+T1592.001,Hardware,Reconnaissance,PRE,true
+T1592.002,Software,Reconnaissance,PRE,true
+T1592.003,Firmware,Reconnaissance,PRE,true
+T1592.004,Client Configurations,Reconnaissance,PRE,true
+T1593,Search Open Websites/Domains,Reconnaissance,PRE,false
+T1593.001,Social Media,Reconnaissance,PRE,true
+T1593.002,Search Engines,Reconnaissance,PRE,true
+T1593.003,Code Repositories,Reconnaissance,PRE,true
+T1594,Search Victim-Owned Websites,Reconnaissance,PRE,false
+T1595,Active Scanning,Reconnaissance,PRE,false
+T1595.001,Scanning IP Blocks,Reconnaissance,PRE,true
+T1595.002,Vulnerability Scanning,Reconnaissance,PRE,true
+T1595.003,Wordlist Scanning,Reconnaissance,PRE,true
+T1596,Search Open Technical Databases,Reconnaissance,PRE,false
+T1596.001,DNS/Passive DNS,Reconnaissance,PRE,true
+T1596.002,WHOIS,Reconnaissance,PRE,true
+T1596.003,Digital Certificates,Reconnaissance,PRE,true
+T1596.004,CDNs,Reconnaissance,PRE,true
+T1596.005,Scan Databases,Reconnaissance,PRE,true
+T1597,Search Closed Sources,Reconnaissance,PRE,false
+T1597.001,Threat Intel Vendors,Reconnaissance,PRE,true
+T1597.002,Purchase Technical Data,Reconnaissance,PRE,true
+T1598,Phishing for Information,Reconnaissance,PRE,false
+T1598.001,Spearphishing Service,Reconnaissance,PRE,true
+T1598.002,Spearphishing Attachment,Reconnaissance,PRE,true
+T1598.003,Spearphishing Link,Reconnaissance,PRE,true
+T1598.004,Spearphishing Voice,Reconnaissance,PRE,true
+T1599,Network Boundary Bridging,Defense Impairment,Network Devices,false
+T1599.001,Network Address Translation Traversal,Defense Impairment,Network Devices,true
+T1600,Weaken Encryption,Defense Impairment,Network Devices,false
+T1600.001,Reduce Key Space,Defense Impairment,Network Devices,true
+T1600.002,Disable Crypto Hardware,Defense Impairment,Network Devices,true
+T1601,Modify System Image,Defense Impairment,Network Devices,false
+T1601.001,Patch System Image,Defense Impairment,Network Devices,true
+T1601.002,Downgrade System Image,Defense Impairment,Network Devices,true
+T1602,Data from Configuration Repository,Collection,Network Devices,false
+T1602.001,SNMP (MIB Dump),Collection,Network Devices,true
+T1602.002,Network Device Configuration Dump,Collection,Network Devices,true
+T1606,Forge Web Credentials,Credential Access,SaaS|Windows|macOS|Linux|IaaS|Office Suite|Identity Provider,false
+T1606.001,Web Cookies,Credential Access,Linux|macOS|Windows|SaaS|IaaS,true
+T1606.002,SAML Tokens,Credential Access,SaaS|Windows|IaaS|Office Suite|Identity Provider,true
+T1608,Stage Capabilities,Resource Development,PRE,false
+T1608.001,Upload Malware,Resource Development,PRE,true
+T1608.002,Upload Tool,Resource Development,PRE,true
+T1608.003,Install Digital Certificate,Resource Development,PRE,true
+T1608.004,Drive-by Target,Resource Development,PRE,true
+T1608.005,Link Target,Resource Development,PRE,true
+T1608.006,SEO Poisoning,Resource Development,PRE,true
+T1609,Container Administration Command,Execution,Containers,false
+T1610,Deploy Container,Execution,Containers,false
+T1611,Escape to Host,Privilege Escalation,Windows|Linux|Containers|ESXi,false
+T1612,Build Image on Host,Stealth,Containers,false
+T1613,Container and Resource Discovery,Discovery,Containers,false
+T1614,System Location Discovery,Discovery,IaaS|Linux|macOS|Windows,false
+T1614.001,System Language Discovery,Discovery,Linux|macOS|Windows,true
+T1615,Group Policy Discovery,Discovery,Windows,false
+T1619,Cloud Storage Object Discovery,Discovery,IaaS,false
+T1620,Reflective Code Loading,Stealth,Linux|macOS|Windows,false
+T1621,Multi-Factor Authentication Request Generation,Credential Access,Windows|Linux|macOS|IaaS|SaaS|Office Suite|Identity Provider,false
+T1622,Debugger Evasion,Stealth|Discovery,Linux|macOS|Windows,false
+T1647,Plist File Modification,Defense Impairment,macOS,false
+T1648,Serverless Execution,Execution,SaaS|IaaS|Office Suite,false
+T1649,Steal or Forge Authentication Certificates,Credential Access,Windows|Linux|macOS|Identity Provider,false
+T1650,Acquire Access,Resource Development,PRE,false
+T1651,Cloud Administration Command,Execution,IaaS,false
+T1652,Device Driver Discovery,Discovery,Linux|macOS|Windows,false
+T1653,Power Settings,Persistence,Windows|Linux|macOS|Network Devices,false
+T1654,Log Enumeration,Discovery,ESXi|IaaS|Linux|macOS|Windows,false
+T1657,Financial Theft,Impact,Linux|macOS|Office Suite|SaaS|Windows,false
+T1659,Content Injection,Initial Access|Command And Control,Linux|macOS|Windows,false
+T1665,Hide Infrastructure,Command And Control,ESXi|Linux|macOS|Network Devices|Windows,false
+T1666,Modify Cloud Resource Hierarchy,Defense Impairment,IaaS,false
+T1667,Email Bombing,Impact,Linux|Office Suite|Windows|macOS,false
+T1668,Exclusive Control,Persistence,Linux|macOS|Windows,false
+T1669,Wi-Fi Networks,Initial Access,Linux|Network Devices|Windows|macOS,false
+T1671,Cloud Application Integration,Persistence,Office Suite|SaaS,false
+T1673,Virtual Machine Discovery,Discovery,ESXi|Linux|macOS|Windows,false
+T1674,Input Injection,Execution,Windows|macOS|Linux,false
+T1675,ESXi Administration Command,Execution,ESXi,false
+T1677,Poisoned Pipeline Execution,Execution,SaaS,false
+T1678,Delay Execution,Stealth,Linux|macOS|Windows,false
+T1679,Selective Exclusion,Stealth,Windows,false
+T1680,Local Storage Discovery,Discovery,ESXi|IaaS|Linux|macOS|Windows,false
+T1681,Search Threat Vendor Data,Reconnaissance,PRE,false
+T1682,Query Public AI Services,Reconnaissance,PRE,false
+T1683,Generate Content,Resource Development,PRE,false
+T1683.001,Written Content,Resource Development,PRE,true
+T1683.002,Audio-Visual Content,Resource Development,PRE,true
+T1684,Social Engineering,Stealth,Linux|macOS|Office Suite|SaaS|Windows,false
+T1684.001,Impersonation,Stealth,Linux|macOS|Office Suite|SaaS|Windows,true
+T1684.002,Email Spoofing,Stealth,Linux|macOS|Office Suite|Windows,true
+T1685,Disable or Modify Tools,Defense Impairment,Containers|ESXi|IaaS|Linux|macOS|Network Devices|Windows,false
+T1685.001,Disable or Modify Windows Event Log,Defense Impairment,Windows,true
+T1685.002,Disable or Modify Cloud Log,Defense Impairment,IaaS|SaaS|Identity Provider|Office Suite,true
+T1685.003,Modify or Spoof Tool UI,Defense Impairment,Linux|macOS|Windows,true
+T1685.004,Disable or Modify Linux Audit System Log,Defense Impairment,Linux,true
+T1685.005,Clear Windows Event Logs,Defense Impairment,Windows,true
+T1685.006,Clear Linux or Mac System Logs,Defense Impairment,Linux|macOS,true
+T1686,Disable or Modify System Firewall,Defense Impairment,ESXi|Linux|macOS|Network Devices|Windows,false
+T1686.001,Cloud Firewall,Defense Impairment,IaaS,true
+T1686.002,Network Device Firewall,Defense Impairment,Network Devices,true
+T1686.003,Windows Host Firewall,Defense Impairment,Windows,true
+T1687,Exploitation for Defense Impairment,Defense Impairment,IaaS|Linux|macOS|SaaS|Windows,false
+T1688,Safe Mode Boot,Defense Impairment,Windows,false
+T1689,Downgrade Attack,Defense Impairment,macOS|Windows|Linux,false
+T1690,Prevent Command History Logging,Defense Impairment,ESXi|Linux|macOS|Network Devices|Windows,false

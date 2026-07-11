@@ -41,8 +41,8 @@ echo "==> Deploying configuration"
 install -m 640 -o root -g suricata "$REPO_DIR/config/suricata.yaml" /etc/suricata/suricata.yaml
 install -m 644 "$REPO_DIR/config/local.rules" /var/lib/suricata/rules/local.rules
 
-# Point the config at the requested interface
-sed -i "s/interface: eth0/interface: $IFACE/g" /etc/suricata/suricata.yaml
+# Point the config at the requested interface (repo default is ens18)
+sed -i "s/interface: ens18/interface: $IFACE/g" /etc/suricata/suricata.yaml
 
 # Make sure the packaged service uses af-packet on our interface
 if [[ -f /etc/default/suricata ]]; then
@@ -50,9 +50,15 @@ if [[ -f /etc/default/suricata ]]; then
     sed -i "s/^IFACE=.*/IFACE=$IFACE/" /etc/default/suricata || true
 fi
 
-echo "==> Fetching rulesets (ET Open)"
+echo "==> Fetching rulesets (free sources, broad MITRE ATT&CK coverage)"
 suricata-update update-sources || true
-suricata-update enable-source et/open || true
+suricata-update enable-source et/open || true                    # main ruleset, ATT&CK-tagged
+suricata-update enable-source oisf/trafficid || true             # protocol/app identification
+suricata-update enable-source sslbl/ssl-fp-blacklist || true     # abuse.ch malware TLS certs
+suricata-update enable-source sslbl/ja3-fingerprints || true     # abuse.ch malware JA3 hashes
+suricata-update enable-source stamus/lateral || true             # lateral-movement detection
+# Optional, noisier threat-hunting rules — enable once tuned:
+# suricata-update enable-source tgreen/hunting || true
 suricata-update --no-test
 
 echo "==> Disabling NIC offloading on $IFACE"

@@ -1,20 +1,61 @@
-# local.rules — your custom detection rules.
+# local.rules — custom rules mapped to MITRE ATT&CK techniques.
 # SIDs 1000000-1999999 are reserved for local use.
-# After editing, reload without restart:  sudo suricatasc -c reload-rules
+# Every rule carries metadata (mitre_tactic_id / mitre_technique_id) that
+# lands in eve.json -> Splunk under alert.metadata.*, same format the
+# ET Open ruleset uses.
+#
+# Network: HOME_NET = 192.168.30.0/27
+# Reload after editing:  sudo suricatasc -c reload-rules
 
-# --- Examples (all commented out; uncomment/adapt what you need) ---
+# ---------------------------------------------------------------------------
+# T1046 — Network Service Discovery (internal port scanning, e.g. nmap)
+# ---------------------------------------------------------------------------
+alert tcp any any -> $HOME_NET any (msg:"LOCAL SCAN Possible TCP port scan (SYN flood to many ports)"; flags:S; flow:stateless; threshold:type both, track by_src, count 100, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_tactic_name Discovery, mitre_technique_id T1046, mitre_technique_name Network_Service_Discovery; sid:1000010; rev:1;)
 
-# Alert on any ICMP from outside to inside (noisy — demo only)
-# alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"LOCAL ICMP from external"; sid:1000001; rev:1;)
+# T1018 / T1046 — ICMP sweep across the subnet
+alert icmp any any -> $HOME_NET any (msg:"LOCAL SCAN Possible ICMP ping sweep"; itype:8; threshold:type both, track by_src, count 20, seconds 10; classtype:attempted-recon; metadata:mitre_tactic_id TA0007, mitre_technique_id T1018, mitre_technique_name Remote_System_Discovery; sid:1000011; rev:1;)
 
-# Cleartext telnet use inside the network
-# alert tcp $HOME_NET any -> any 23 (msg:"LOCAL Telnet client in use"; flow:to_server,established; sid:1000002; rev:1;)
+# ---------------------------------------------------------------------------
+# T1110 — Brute Force against exposed services
+# ---------------------------------------------------------------------------
+alert tcp any any -> $HOME_NET 22 (msg:"LOCAL BRUTE Possible SSH brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_tactic_name Credential_Access, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000020; rev:1;)
 
-# Outbound connection to a known-bad IP (replace with your IOC)
-# alert ip $HOME_NET any -> 203.0.113.66 any (msg:"LOCAL Traffic to blocklisted IP"; sid:1000003; rev:1;)
+alert tcp any any -> $HOME_NET 3389 (msg:"LOCAL BRUTE Possible RDP brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 15, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000021; rev:1;)
 
-# DNS query for a suspicious domain
-# alert dns $HOME_NET any -> any any (msg:"LOCAL DNS query for bad domain"; dns.query; content:"evil.example.com"; nocase; sid:1000004; rev:1;)
+alert tcp any any -> $HOME_NET 445 (msg:"LOCAL BRUTE Possible SMB brute force (rapid connections)"; flags:S; flow:stateless; threshold:type both, track by_src, count 20, seconds 60; classtype:attempted-admin; metadata:mitre_tactic_id TA0006, mitre_technique_id T1110, mitre_technique_name Brute_Force; sid:1000022; rev:1;)
 
-# SMB from a workstation VLAN to the internet (lateral/exfil indicator)
-# alert tcp $HOME_NET any -> $EXTERNAL_NET 445 (msg:"LOCAL Outbound SMB to internet"; flow:to_server; sid:1000005; rev:1;)
+# ---------------------------------------------------------------------------
+# T1021 — Remote Services (lateral movement inside the /27)
+# ---------------------------------------------------------------------------
+alert tcp $HOME_NET any -> $HOME_NET 3389 (msg:"LOCAL LATERAL Internal host initiating RDP to another internal host"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 300; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_tactic_name Lateral_Movement, mitre_technique_id T1021.001, mitre_technique_name Remote_Desktop_Protocol; sid:1000030; rev:1;)
+
+alert tcp $HOME_NET any -> $HOME_NET [5985,5986] (msg:"LOCAL LATERAL WinRM between internal hosts"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 300; classtype:policy-violation; metadata:mitre_tactic_id TA0008, mitre_technique_id T1021.006, mitre_technique_name Windows_Remote_Management; sid:1000031; rev:1;)
+
+# ---------------------------------------------------------------------------
+# T1071.004 / T1572 — DNS-based C2 and tunneling
+# ---------------------------------------------------------------------------
+alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Suspicious long DNS query (possible tunneling)"; dns.query; bsize:>75; threshold:type both, track by_src, count 20, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_tactic_name Command_And_Control, mitre_technique_id T1071.004, mitre_technique_name DNS; sid:1000040; rev:1;)
+
+alert dns $HOME_NET any -> any any (msg:"LOCAL C2 High-volume DNS TXT queries (possible tunneling)"; dns.query; dns.opcode:0; threshold:type both, track by_src, count 50, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1572, mitre_technique_name Protocol_Tunneling; sid:1000041; rev:1;)
+
+# T1090/T1571 — internal host talking to the internet on odd C2-ish ports
+alert tcp $HOME_NET any -> $EXTERNAL_NET [4444,5555,6666,6667,1337,31337] (msg:"LOCAL C2 Outbound connection to classic C2/IRC port"; flags:S; flow:stateless; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1571, mitre_technique_name Non-Standard_Port; sid:1000042; rev:1;)
+
+# ---------------------------------------------------------------------------
+# T1048 — Exfiltration over alternative protocols
+# ---------------------------------------------------------------------------
+alert tcp $HOME_NET any -> $EXTERNAL_NET 21 (msg:"LOCAL EXFIL Outbound FTP from internal network"; flags:S; flow:stateless; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_tactic_name Exfiltration, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000050; rev:1;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 445 (msg:"LOCAL EXFIL Outbound SMB to internet (exfil/lateral indicator)"; flags:S; flow:stateless; classtype:policy-violation; metadata:mitre_tactic_id TA0010, mitre_technique_id T1048, mitre_technique_name Exfiltration_Over_Alternative_Protocol; sid:1000051; rev:1;)
+
+# ---------------------------------------------------------------------------
+# T1040 — cleartext protocols worth flagging on a modern network
+# ---------------------------------------------------------------------------
+alert tcp $HOME_NET any -> any 23 (msg:"LOCAL POLICY Telnet client in use (cleartext credentials)"; flow:to_server,established; threshold:type limit, track by_src, count 1, seconds 600; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000060; rev:1;)
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL POLICY HTTP Basic auth over cleartext to internet"; http.header; content:"Authorization|3a 20|Basic"; nocase; classtype:policy-violation; metadata:mitre_tactic_id TA0006, mitre_technique_id T1040, mitre_technique_name Network_Sniffing; sid:1000061; rev:1;)
+
+# ---------------------------------------------------------------------------
+# T1105 — Ingress Tool Transfer (executables downloaded over plain HTTP)
+# ---------------------------------------------------------------------------
+alert http any any -> $HOME_NET any (msg:"LOCAL DOWNLOAD Windows executable over plain HTTP (MZ header)"; flow:to_client,established; file.data; content:"MZ"; startswith; classtype:policy-violation; metadata:mitre_tactic_id TA0011, mitre_technique_id T1105, mitre_technique_name Ingress_Tool_Transfer; sid:1000070; rev:1;)
