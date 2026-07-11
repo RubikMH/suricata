@@ -102,8 +102,8 @@ alert tcp $HOME_NET any -> $HOME_NET 22 (msg:"LOCAL LATERAL SSH between internal
 # DNS tunneling: abnormally long query names
 alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Long DNS query burst (possible DNS tunneling)"; dns.query; bsize:>75; threshold:type both, track by_src, count 20, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1071.004, mitre_technique_name DNS; sid:1000400; rev:2;)
 
-# DNS tunneling: sheer query volume from one host
-alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Excessive DNS query rate from single host"; dns.query; dns.opcode:0; threshold:type both, track by_src, count 200, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1572, mitre_technique_name Protocol_Tunneling; sid:1000401; rev:2;)
+# DNS tunneling: sheer query volume from one host (opcode 0 = standard query)
+alert dns $HOME_NET any -> any any (msg:"LOCAL C2 Excessive DNS query rate from single host"; dns.opcode:0; threshold:type both, track by_src, count 200, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1572, mitre_technique_name Protocol_Tunneling; sid:1000401; rev:3;)
 
 # ICMP tunneling: echo packets with large payloads (ptunnel, icmpsh)
 alert icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL C2 Oversized ICMP echo (possible ICMP tunnel)"; itype:8; dsize:>800; threshold:type both, track by_src, count 5, seconds 60; classtype:bad-unknown; metadata:mitre_tactic_id TA0011, mitre_technique_id T1095, mitre_technique_name Non-Application_Layer_Protocol; sid:1000402; rev:1;)

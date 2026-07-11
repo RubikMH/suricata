@@ -7,7 +7,10 @@
 set -euo pipefail
 
 echo "[$(date -Is)] updating rulesets"
-suricata-update --no-test=false
+# --no-test: skip suricata-update's internal `suricata -T`, which fails under
+# run-as (it drops to the suricata user but its temp dir is root-owned).
+# We validate separately below against the real config before reloading.
+suricata-update --no-test
 
 # Hot-reload: tell the running daemon to re-read rule files
 if suricatasc -c reload-rules >/dev/null 2>&1; then
